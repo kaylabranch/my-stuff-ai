@@ -1,0 +1,363 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@500;600;700&display=swap');
+
+:root {
+    font-family: 'DM Sans', sans-serif;
+    color: #211e1a;
+    background: #f7f4ed;
+    font-synthesis: none;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    min-width: 320px;
+}
+
+button,
+input,
+select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+}
+
+.app-shell {
+    max-width: 1240px;
+    margin: auto;
+    padding: 0 40px 72px;
+}
+
+.topbar {
+    height: 76px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid #dfd9cd;
+}
+
+.brand {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    font: 700 25px 'Playfair Display', serif;
+}
+
+.brand b {
+    padding: 3px 7px;
+    border-radius: 999px;
+    color: #fff;
+    background: #b56b29;
+    font: 600 10px 'DM Sans', sans-serif;
+    letter-spacing: .12em;
+}
+
+.item-count {
+    color: #837d74;
+    font-size: 13px;
+}
+
+.workspace-intro {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 24px;
+    padding: 58px 0 36px;
+}
+
+.eyebrow,
+.item-category {
+    margin: 0 0 8px;
+    color: #b56b29;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .13em;
+    text-transform: uppercase;
+}
+
+.workspace-intro h1 {
+    margin: 0;
+    font: 600 clamp(35px, 5vw, 62px)/1.04 'Playfair Display', serif;
+    letter-spacing: -.02em;
+}
+
+.intro-copy {
+    max-width: 500px;
+    margin: 18px 0 0;
+    color: #746e65;
+    line-height: 1.6;
+}
+
+.upload-button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 7px;
+    padding: 12px 17px;
+    color: #fff;
+    background: #211e1a;
+    font-weight: 600;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 1px;
+    margin-bottom: 40px;
+    border: 1px solid #dfd9cd;
+    background: #dfd9cd;
+}
+
+.stats-row>div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    padding: 18px 20px;
+    background: #fcfbf7;
+}
+
+.stats-row strong {
+    font: 600 27px 'Playfair Display', serif;
+}
+
+.stats-row span {
+    color: #837d74;
+    font-size: 12px;
+}
+
+.stats-row .accent-stat {
+    background: #fff7e4;
+}
+
+.stats-row .accent-stat strong {
+    color: #b56b29;
+}
+
+.toolbar {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    padding-bottom: 16px;
+    border-bottom: 1px solid #dfd9cd;
+}
+
+.search-field {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    flex: 1;
+    min-width: 220px;
+    padding: 10px 12px;
+    border: 1px solid #cfc7b9;
+    border-radius: 6px;
+    color: #837d74;
+    background: #fcfbf7;
+}
+
+.search-field input {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    color: #211e1a;
+    background: transparent;
+}
+
+.toolbar select {
+    padding: 10px 12px;
+    border: 1px solid #cfc7b9;
+    border-radius: 6px;
+    color: #4f4942;
+    background: #fcfbf7;
+}
+
+.view-toggle {
+    display: flex;
+    border: 1px solid #cfc7b9;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.view-toggle button {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 0;
+    color: #837d74;
+    background: #fcfbf7;
+}
+
+.view-toggle button.active {
+    color: #fff;
+    background: #211e1a;
+}
+
+.tag-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 7px;
+    padding: 16px 0;
+}
+
+.tag {
+    border: 1px solid #cfc7b9;
+    border-radius: 999px;
+    padding: 5px 10px;
+    color: #837d74;
+    background: #fcfbf7;
+    font-size: 12px;
+}
+
+.tag.active {
+    color: #fff;
+    border-color: #b56b29;
+    background: #b56b29;
+}
+
+.inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 16px;
+    padding-top: 10px;
+}
+
+.inventory-list {
+    display: grid;
+    gap: 8px;
+    padding-top: 10px;
+}
+
+.item-card {
+    display: grid;
+    grid-template-columns: 100px 1fr;
+    gap: 16px;
+    padding: 12px;
+    border: 1px solid #dfd9cd;
+    background: #fcfbf7;
+}
+
+.inventory-grid .item-card {
+    display: block;
+    padding: 0;
+    overflow: hidden;
+}
+
+.image-placeholder {
+    display: grid;
+    place-items: center;
+    min-height: 96px;
+    color: #b5aa98;
+    background: #ebe5d8;
+}
+
+.inventory-grid .image-placeholder {
+    min-height: 170px;
+}
+
+.item-card>div:last-child {
+    padding: 12px;
+}
+
+.item-card h2 {
+    margin: 0 0 5px;
+    font: 600 20px 'Playfair Display', serif;
+}
+
+.item-card p:last-child {
+    margin: 0;
+    color: #837d74;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+.empty-state {
+    display: grid;
+    justify-items: center;
+    gap: 9px;
+    min-height: 280px;
+    align-content: center;
+    color: #b56b29;
+    text-align: center;
+}
+
+.empty-state h2 {
+    margin: 5px 0 0;
+    color: #4f4942;
+    font: 600 24px 'Playfair Display', serif;
+}
+
+.empty-state p {
+    margin: 0;
+    color: #837d74;
+}
+
+.error-message {
+    padding: 12px;
+    color: #9b3d2c;
+    background: #fbe9e5;
+}
+
+.visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+@media (max-width: 700px) {
+    .app-shell {
+        padding: 0 18px 48px;
+    }
+
+    .workspace-intro {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 40px 0 28px;
+    }
+
+    .upload-button {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .toolbar select {
+        flex: 1;
+        min-width: 140px;
+    }
+
+    .view-toggle {
+        margin-left: auto;
+    }
+
+    .inventory-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 10px;
+    }
+
+    .inventory-grid .item-card h2 {
+        font-size: 17px;
+    }
+
+    .inventory-list .item-card {
+        grid-template-columns: 72px 1fr;
+    }
+
+    .inventory-list .image-placeholder {
+        min-height: 72px;
+    }
+}
