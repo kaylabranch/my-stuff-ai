@@ -1,7 +1,7 @@
 import { parseDetectionResponse } from './detectionSchema';
 import type { DetectedItem } from '../../types/inventory';
 
-const DEFAULT_MODEL = 'gemini-2.5-flash-lite';
+const DEFAULT_MODEL = 'gemini-3.5-flash-lite';
 const endpoint = (model: string, apiKey: string) =>
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 

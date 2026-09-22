@@ -38,7 +38,7 @@ export function App() {
                 <div>
                     <p className="eyebrow">Home inventory</p>
                     <h1>Know what you own.</h1>
-                    <p className="intro-copy">Start with a room photo. My Stuff AI will turn it into a considered, searchable inventory.</p>
+                    <p className="intro-copy">Start with a room photo. My Stuff AI will turn it into a searchable inventory.</p>
                 </div>
                 <button className="upload-button" type="button" onClick={() => fileInputRef.current?.click()}><Upload size={17} /> Upload a photo</button>
             </section>
