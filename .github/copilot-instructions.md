@@ -19,7 +19,7 @@ evolve, but the requirements below should still hold.
   components), TypeScript.
 - **Storage:** browser IndexedDB (local-first, per-device persistence, no
   user accounts, no server-side storage of items or photos).
-- **AI vision:** Anthropic Messages API (image input) for object
+- **AI vision:** Google Gemini API via Google AI Studio (image input) for object
   identification/categorization/description.
 - **PDF export:** client-side PDF generation (e.g. jsPDF).
 - **Testing:** Vitest + React Testing Library for unit/component tests.
@@ -51,7 +51,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 ---
 
 ## AI Vision
-- A single Claude vision call returns name, category, description, tags,
+- A single Gemini vision call returns name, category, description, tags,
   confidence, and bounding box for each detected object — no separate
   localization/detection service.
 - Bounding-box coordinates from the vision model are an approximation, not
@@ -213,7 +213,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 
 ## Documentation
 - **README:** must be kept current as features are added or changed —
-  setup instructions, environment variables (e.g. Anthropic API key),
+  setup instructions, environment variables (e.g. Gemini API key),
   available scripts, and a summary of app features.
 - **This file (`copilot-instructions.md`):** must be updated alongside the
   README whenever requirements, data model, or architecture change, so

@@ -23,3 +23,19 @@ export interface InventoryFilters {
     tags: string[];
     sort: 'newest' | 'oldest' | 'az' | 'za' | 'category' | 'value-hi' | 'value-lo';
 }
+
+export interface BoundingBox {
+    x: number;
+    y: number;
+    w: number;
+    h: number;
+}
+
+export interface DetectedItem {
+    name: string;
+    category: Category;
+    description: string;
+    suggestedTags: string[];
+    confidence: number;
+    bbox: BoundingBox;
+}
