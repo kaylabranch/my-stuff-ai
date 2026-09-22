@@ -167,6 +167,11 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 
 ## General Coding Guidelines
 
+### Secret Handling
+- Never read, print, summarize, or include the contents of `.env`, `.env.local`, or any other secret-bearing file in tool output or responses.
+- When environment configuration must be checked, inspect only file names, key names, or redacted values, and ask the user to verify secret values locally.
+- Never place API keys in source code, screenshots, logs, tests, commits, or user-facing bundles.
+
 ### Principles
 - **Simplicity:** write code that is easy to read, understand, and
   maintain. Avoid unnecessary complexity.
