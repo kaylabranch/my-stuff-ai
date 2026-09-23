@@ -36,19 +36,31 @@ function asNumber(value: unknown, fallback: number): number {
 
 function normalizeBoundingBox(value: unknown) {
     if (Array.isArray(value) && value.length === 4) {
-        const [x, y, w, h] = value.map((entry) => asNumber(entry, 0));
-        return { x, y, w, h };
+        const [top, left, bottom, right] = value.map((entry) => asNumber(entry, 0));
+        return { x: left, y: top, w: right - left, h: bottom - top };
     }
-    if (!value || typeof value !== 'object') return { x: 0, y: 0, w: 1, h: 1 };
-    const box = value as Record<string, unknown>;
+    if (!value || typeof value !== 'object') return null;
+    const box = Object.fromEntries(Object.entries(value as Record<string, unknown>).map(([key, entry]) => [key.toLowerCase(), entry]));
     if ('x' in box && 'y' in box && 'w' in box && 'h' in box) {
         return { x: asNumber(box.x, 0), y: asNumber(box.y, 0), w: asNumber(box.w, 1), h: asNumber(box.h, 1) };
     }
-    const left = asNumber(box.xMin ?? box.left, 0);
-    const top = asNumber(box.yMin ?? box.top, 0);
-    const right = asNumber(box.xMax ?? box.right, 1);
-    const bottom = asNumber(box.yMax ?? box.bottom, 1);
-    return { x: left, y: top, w: right - left, h: bottom - top };
+    if ('x' in box && 'y' in box && 'width' in box && 'height' in box) {
+        return { x: asNumber(box.x, 0), y: asNumber(box.y, 0), w: asNumber(box.width, 1), h: asNumber(box.height, 1) };
+    }
+    if ('left' in box && 'top' in box && 'width' in box && 'height' in box) {
+        return { x: asNumber(box.left, 0), y: asNumber(box.top, 0), w: asNumber(box.width, 1), h: asNumber(box.height, 1) };
+    }
+    if (['x1', 'y1', 'x2', 'y2'].every((key) => key in box)) {
+        return { x: asNumber(box.x1, 0), y: asNumber(box.y1, 0), w: asNumber(box.x2, 1) - asNumber(box.x1, 0), h: asNumber(box.y2, 1) - asNumber(box.y1, 0) };
+    }
+    if (['xmin', 'ymin', 'xmax', 'ymax'].every((key) => key in box) || ['left', 'top', 'right', 'bottom'].every((key) => key in box)) {
+        const left = asNumber(box.xmin ?? box.left, 0);
+        const top = asNumber(box.ymin ?? box.top, 0);
+        const right = asNumber(box.xmax ?? box.right, 1);
+        const bottom = asNumber(box.ymax ?? box.bottom, 1);
+        return { x: left, y: top, w: right - left, h: bottom - top };
+    }
+    return null;
 }
 
 function clamp(value: number) {
@@ -65,9 +77,12 @@ function normalizeItem(value: unknown) {
     const rawConfidence = asNumber(item.confidence ?? item.score, 0.5);
     const confidence = rawConfidence > 1 && rawConfidence <= 100 ? rawConfidence / 100 : rawConfidence;
     const estimatedValue = Math.max(0, asNumber(item.estimatedValue ?? item.estimated_value ?? item.value, 0));
-    const rawBox = item.bbox ?? item.boundingBox;
+    const rawBox = item.bbox ?? item.boundingBox ?? item.box_2d ?? item.box2d ?? item.box;
     const box = normalizeBoundingBox(rawBox);
-    const scale = Math.max(Math.abs(box.x), Math.abs(box.y), Math.abs(box.w), Math.abs(box.h)) > 1 ? 1000 : 1;
+    if (!box) return { ...item, name: typeof item.name === 'string' ? item.name.trim() : '', category, description: typeof item.description === 'string' ? item.description : '', suggestedTags: [], confidence, estimatedValue, bbox: null };
+    const scale = Math.max(Math.abs(box.x), Math.abs(box.y), Math.abs(box.w), Math.abs(box.h)) > 1
+        ? Math.max(Math.abs(box.x), Math.abs(box.y), Math.abs(box.w), Math.abs(box.h)) <= 100 ? 100 : 1000
+        : 1;
     return {
         name: typeof item.name === 'string' ? item.name.trim() : '',
         category,
