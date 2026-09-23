@@ -55,10 +55,12 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
 
     const totalValue = items.reduce((sum, item) => sum + item.estimatedValue, 0);
     const categoryCount = new Set(items.map((item) => item.category)).size;
+    const roomCount = new Set(items.map((item) => item.room).filter(Boolean)).size;
     const tagCount = new Set(items.flatMap((item) => item.tags)).size;
     const statValues = [
         ['Items', String(items.length)],
         ['Categories', String(categoryCount)],
+        ['Rooms', String(roomCount)],
         ['Tags', String(tagCount)],
         ...(options.includeValues ? [['Estimated value', `$${totalValue.toLocaleString()}`]] : []),
     ];
@@ -130,7 +132,7 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
         font('bold', 9);
         document.text(item.name || 'Unnamed item', x, y + 3);
         font('normal', 7.5, muted);
-        document.text(item.category, x, y + 8);
+        document.text(item.room ? `${item.room} | ${item.category}` : item.category, x, y + 8);
         if (item.description) {
             font('normal', 7, muted);
             document.text(document.splitTextToSize(item.description, contentWidth - (x - margin) - valueOffset - 4).slice(0, 2), x, y + 13);

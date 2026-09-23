@@ -6,8 +6,9 @@ export function filterAndSortInventory(items: InventoryItem[], filters: Inventor
         const matchesQuery = !query || [item.name, item.description, ...item.tags]
             .some((value) => value.toLowerCase().includes(query));
         const matchesCategory = !filters.category || item.category === filters.category;
+        const matchesRoom = !filters.room || item.room === filters.room;
         const matchesTags = filters.tags.every((tag) => item.tags.includes(tag));
-        return matchesQuery && matchesCategory && matchesTags;
+        return matchesQuery && matchesCategory && matchesRoom && matchesTags;
     });
 
     return result.sort((first, second) => {

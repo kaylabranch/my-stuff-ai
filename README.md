@@ -42,11 +42,12 @@ Each upload is processed independently. Saving the same photo more than once cur
 Features include:
 - Gemini image analysis, detection, and cropping
 - Item detection review
-- Editable names/categories/tags/descriptions/estimated values
+- Room labeling per upload (auto-suggested from existing rooms, added as a tag on every item in that room)
+- Editable names/categories/rooms/tags/descriptions/estimated values
 - IndexedDB persistence
-- Search, sorting, category filtering, tag filtering
+- Search, sorting, category filtering, room filtering, tag filtering
 - Grid/list views
-- Inventory statistics
+- Inventory statistics, including room count
 - My favorite: Configurable PDF export!
 
 <img width="1891" height="943" alt="my-stuff-ai screenshot 2" src="https://github.com/user-attachments/assets/6d45d3a6-8b96-4795-a748-c193cae3c060" />

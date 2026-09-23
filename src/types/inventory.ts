@@ -12,6 +12,7 @@ export interface InventoryItem {
     category: Category;
     description: string;
     tags: string[];
+    room: string;
     imageBlob?: Blob;
     estimatedValue: number;
     createdAt: number;
@@ -20,6 +21,7 @@ export interface InventoryItem {
 export interface InventoryFilters {
     query: string;
     category: Category | '';
+    room: string;
     tags: string[];
     sort: 'newest' | 'oldest' | 'az' | 'za' | 'category' | 'value-hi' | 'value-lo';
 }

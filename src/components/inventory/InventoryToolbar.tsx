@@ -4,14 +4,15 @@ import { CATEGORIES, type InventoryFilters } from '../../types/inventory';
 interface InventoryToolbarProps {
     filters: InventoryFilters;
     tags: string[];
+    rooms: string[];
     view: 'grid' | 'list';
     onFilterChange: <Key extends keyof InventoryFilters>(key: Key, value: InventoryFilters[Key]) => void;
     onClearFilters: () => void;
     onViewChange: (view: 'grid' | 'list') => void;
 }
 
-export function InventoryToolbar({ filters, tags, view, onFilterChange, onClearFilters, onViewChange }: InventoryToolbarProps) {
-    const hasActiveFilters = filters.query !== '' || filters.category !== '' || filters.tags.length > 0 || filters.sort !== 'newest';
+export function InventoryToolbar({ filters, tags, rooms, view, onFilterChange, onClearFilters, onViewChange }: InventoryToolbarProps) {
+    const hasActiveFilters = filters.query !== '' || filters.category !== '' || filters.room !== '' || filters.tags.length > 0 || filters.sort !== 'newest';
     return (
         <>
             <div className="toolbar">
@@ -21,6 +22,9 @@ export function InventoryToolbar({ filters, tags, view, onFilterChange, onClearF
                 </select>
                 <select value={filters.category} onChange={(event) => onFilterChange('category', event.target.value as InventoryFilters['category'])} aria-label="Filter by category">
                     <option value="">All categories</option>{CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}
+                </select>
+                <select value={filters.room} onChange={(event) => onFilterChange('room', event.target.value)} aria-label="Filter by room">
+                    <option value="">All rooms</option>{rooms.map((room) => <option key={room} value={room}>{room}</option>)}
                 </select>
                 <button type="button" className="clear-filters-button" onClick={onClearFilters} disabled={!hasActiveFilters} aria-label="Clear filters" title="Clear filters"><X size={17} /></button>
             </div>

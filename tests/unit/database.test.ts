@@ -8,6 +8,7 @@ const item: InventoryItem = {
     category: 'Lighting',
     description: 'A brass lamp.',
     tags: ['brass'],
+    room: 'Living Room',
     imageBlob: new Blob(['thumbnail'], { type: 'image/jpeg' }),
     estimatedValue: 45,
     createdAt: 1,

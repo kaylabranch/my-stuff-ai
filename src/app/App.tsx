@@ -17,7 +17,7 @@ import { ItemEditModal } from '../components/inventory/ItemEditModal';
 import type { AnalysisProgress as AnalysisProgressUpdate } from '../lib/ai/geminiProvider';
 import { ExportPdfModal } from '../components/export/ExportPdfModal';
 
-const initialFilters: InventoryFilters = { query: '', category: '', tags: [], sort: 'newest' };
+const initialFilters: InventoryFilters = { query: '', category: '', room: '', tags: [], sort: 'newest' };
 
 export function App() {
     const { items, isLoading, error, reload } = useInventory();
@@ -27,6 +27,7 @@ export function App() {
     const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgressUpdate | null>(null);
     const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
     const [reviewFile, setReviewFile] = useState<File | null>(null);
+    const [roomName, setRoomName] = useState('');
     const [isSaving, setIsSaving] = useState(false);
     const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
     const [confirmAction, setConfirmAction] = useState<'clear' | InventoryItem | null>(null);
@@ -34,6 +35,7 @@ export function App() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const visibleItems = useMemo(() => filterAndSortInventory(items, filters), [items, filters]);
     const categories = [...new Set(items.map((item) => item.category))].sort();
+    const rooms = [...new Set(items.map((item) => item.room).filter(Boolean))].sort();
     const tags = [...new Set(items.flatMap((item) => item.tags))].sort();
     const updateFilter = <Key extends keyof InventoryFilters>(key: Key, value: InventoryFilters[Key]) =>
         setFilters((current) => ({ ...current, [key]: value }));
@@ -57,6 +59,7 @@ export function App() {
     const closeReview = () => {
         setReviewFile(null);
         setReviewItems([]);
+        setRoomName('');
         setAnalysisStatus(null);
         setAnalysisProgress(null);
     };
@@ -100,26 +103,32 @@ export function App() {
             {analysisProgress && <AnalysisProgress label={analysisProgress.phase === 'reading' ? 'Reading image...' : analysisProgress.phase === 'parsing' ? 'Parsing detected objects...' : analysisProgress.progress >= 80 ? 'Gemini is finishing analysis...' : 'Gemini is analyzing the image...'} progress={analysisProgress.progress} />}
             {analysisStatus && !analysisProgress && <p className="analysis-status" role="status">{analysisStatus}</p>}
 
-            <StatsRow itemCount={items.length} categoryCount={categories.length} tagCount={tags.length} estimatedValue={items.reduce((total, item) => total + item.estimatedValue, 0)} />
+            <StatsRow itemCount={items.length} categoryCount={categories.length} roomCount={rooms.length} tagCount={tags.length} estimatedValue={items.reduce((total, item) => total + item.estimatedValue, 0)} />
 
-            <InventorySection items={items} visibleItems={visibleItems} filters={filters} tags={tags} view={view} isLoading={isLoading} error={error} onFilterChange={updateFilter} onClearFilters={clearFilters} onViewChange={setView} onEdit={setEditingItem} onDelete={setConfirmAction} />
+            <InventorySection items={items} visibleItems={visibleItems} filters={filters} tags={tags} rooms={rooms} view={view} isLoading={isLoading} error={error} onFilterChange={updateFilter} onClearFilters={clearFilters} onViewChange={setView} onEdit={setEditingItem} onDelete={setConfirmAction} />
 
             {reviewFile && <DetectionReviewModal
                 file={reviewFile}
                 items={reviewItems}
+                roomName={roomName}
+                rooms={rooms}
                 isSaving={isSaving}
+                onRoomNameChange={setRoomName}
                 onChange={updateReviewItem}
                 onToggleRemoved={(index) => setReviewItems((current) => current.map((item, itemIndex) => itemIndex === index ? { ...item, removed: !item.removed } : item))}
                 onClose={closeReview}
                 onSave={async () => {
                     setIsSaving(true);
+                    const room = roomName.trim();
                     const eligible = reviewItems.filter((item) => !item.removed && item.name.trim());
                     let savedCount = 0;
                     try {
                         for (const item of eligible) {
                             let imageBlob: Blob;
                             try { imageBlob = await cropImageToBlob(reviewFile, item.bbox); } catch { imageBlob = reviewFile; }
-                            const record: InventoryItem = { id: `item_${Date.now()}_${Math.random().toString(36).slice(2)}`, name: item.name.trim(), category: item.category, description: item.description.trim(), tags: item.suggestedTags, imageBlob, estimatedValue: item.estimatedValue, createdAt: Date.now() };
+                            const tags = [...item.suggestedTags];
+                            if (room && !tags.some((tag) => tag.toLowerCase() === room.toLowerCase())) tags.push(room);
+                            const record: InventoryItem = { id: `item_${Date.now()}_${Math.random().toString(36).slice(2)}`, name: item.name.trim(), category: item.category, description: item.description.trim(), tags, room, imageBlob, estimatedValue: item.estimatedValue, createdAt: Date.now() };
                             await itemsRepository.put(record);
                             savedCount += 1;
                         }
@@ -140,7 +149,7 @@ export function App() {
                 onCancel={() => setConfirmAction(null)}
                 onConfirm={() => void (confirmAction === 'clear' ? clearInventory() : deleteItem(confirmAction))}
             />}
-            {editingItem && <ItemEditModal item={editingItem} isSaving={isSaving} onClose={() => setEditingItem(null)} onSave={(changes) => {
+            {editingItem && <ItemEditModal item={editingItem} rooms={rooms} isSaving={isSaving} onClose={() => setEditingItem(null)} onSave={(changes) => {
                 setIsSaving(true);
                 void itemsRepository.put({ ...editingItem, ...changes }).then(async () => {
                     setEditingItem(null);

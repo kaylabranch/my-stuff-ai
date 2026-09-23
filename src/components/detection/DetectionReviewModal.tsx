@@ -8,14 +8,17 @@ export type ReviewItem = DetectedItem & { removed: boolean };
 interface DetectionReviewModalProps {
     file: File;
     items: ReviewItem[];
+    roomName: string;
+    rooms: string[];
     isSaving: boolean;
+    onRoomNameChange: (value: string) => void;
     onChange: (index: number, changes: Partial<ReviewItem>) => void;
     onToggleRemoved: (index: number) => void;
     onClose: () => void;
     onSave: () => void;
 }
 
-export function DetectionReviewModal({ file, items, isSaving, onChange, onToggleRemoved, onClose, onSave }: DetectionReviewModalProps) {
+export function DetectionReviewModal({ file, items, roomName, rooms, isSaving, onRoomNameChange, onChange, onToggleRemoved, onClose, onSave }: DetectionReviewModalProps) {
     const [sourceUrl, setSourceUrl] = useState<string | null>(null);
     const [thumbUrls, setThumbUrls] = useState<Array<string | null>>([]);
 
@@ -51,6 +54,7 @@ export function DetectionReviewModal({ file, items, isSaving, onChange, onToggle
     }, [file, items]);
 
     const eligibleCount = items.filter((item) => !item.removed && item.name.trim()).length;
+    const canSave = eligibleCount > 0 && roomName.trim().length > 0;
 
     return (
         <div className="review-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
@@ -59,6 +63,7 @@ export function DetectionReviewModal({ file, items, isSaving, onChange, onToggle
                     <div><p className="eyebrow">Detection review</p><h2 id="review-title">Review {items.filter((item) => !item.removed).length} eligible objects</h2></div>
                     <button className="icon-button" type="button" onClick={onClose} aria-label="Close review" title="Close"><X size={18} /></button>
                 </div>
+                <label className="review-room-field">Room name<input value={roomName} onChange={(event) => onRoomNameChange(event.target.value)} placeholder="e.g. Living Room" list="review-room-options" required /><datalist id="review-room-options">{rooms.map((room) => <option key={room} value={room} />)}</datalist></label>
                 {sourceUrl && <div className="review-source"><img className='source-image' src={sourceUrl} alt="Uploaded room" /></div>}
                 <div className="review-list">
                     {items.map((item, index) => <div className={item.removed ? 'review-item removed' : 'review-item'} key={`${item.name}-${index}`}>
@@ -77,7 +82,7 @@ export function DetectionReviewModal({ file, items, isSaving, onChange, onToggle
                 </div>
                 <div className="review-footer">
                     <button className="secondary-button" type="button" onClick={onClose} title="Discard this batch">Discard</button>
-                    <button className="upload-button" type="button" disabled={isSaving || eligibleCount === 0} onClick={onSave} title="Save eligible items"><Save size={17} /> {isSaving ? 'Saving...' : `Save ${eligibleCount} items`}</button>
+                    <button className="upload-button" type="button" disabled={isSaving || !canSave} onClick={onSave} title="Save eligible items"><Save size={17} /> {isSaving ? 'Saving...' : `Save ${eligibleCount} items`}</button>
                 </div>
             </section>
         </div>
