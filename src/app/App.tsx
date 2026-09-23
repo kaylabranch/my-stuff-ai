@@ -37,6 +37,7 @@ export function App() {
     const tags = [...new Set(items.flatMap((item) => item.tags))].sort();
     const updateFilter = <Key extends keyof InventoryFilters>(key: Key, value: InventoryFilters[Key]) =>
         setFilters((current) => ({ ...current, [key]: value }));
+    const clearFilters = () => setFilters(initialFilters);
 
     useEffect(() => {
         if (analysisProgress?.phase !== 'analyzing') return;
@@ -101,7 +102,7 @@ export function App() {
 
             <StatsRow itemCount={items.length} categoryCount={categories.length} tagCount={tags.length} estimatedValue={items.reduce((total, item) => total + item.estimatedValue, 0)} />
 
-            <InventorySection items={items} visibleItems={visibleItems} filters={filters} tags={tags} view={view} isLoading={isLoading} error={error} onFilterChange={updateFilter} onViewChange={setView} onEdit={setEditingItem} onDelete={setConfirmAction} />
+            <InventorySection items={items} visibleItems={visibleItems} filters={filters} tags={tags} view={view} isLoading={isLoading} error={error} onFilterChange={updateFilter} onClearFilters={clearFilters} onViewChange={setView} onEdit={setEditingItem} onDelete={setConfirmAction} />
 
             {reviewFile && <DetectionReviewModal
                 file={reviewFile}

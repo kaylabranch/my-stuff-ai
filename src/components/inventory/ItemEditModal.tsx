@@ -25,14 +25,14 @@ export function ItemEditModal({ item, isSaving, onSave, onClose }: ItemEditModal
     return (
         <div className="edit-overlay" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}>
             <section className="edit-modal" role="dialog" aria-modal="true" aria-labelledby="edit-title">
-                <div className="edit-header"><div><p className="eyebrow">Inventory item</p><h2 id="edit-title">Edit item</h2></div><button className="icon-button" type="button" onClick={onClose} aria-label="Close edit dialog"><X size={18} /></button></div>
+                <div className="edit-header"><div><p className="eyebrow">Inventory item</p><h2 id="edit-title">Edit item</h2></div><button className="icon-button" type="button" onClick={onClose} aria-label="Close edit dialog" title="Close"><X size={18} /></button></div>
                 <form className="edit-form" onSubmit={handleSubmit}>
                     <label>Name<input name="name" defaultValue={item.name} required /></label>
                     <label>Category<select name="category" defaultValue={item.category}>{CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}</select></label>
                     <label>Description<textarea name="description" defaultValue={item.description} rows={3} /></label>
                     <label>Tags<input name="tags" defaultValue={item.tags.join(', ')} placeholder="tags, comma separated" /></label>
                     <label>Estimated value ($)<input name="estimatedValue" type="number" min="0" step="0.01" defaultValue={item.estimatedValue || ''} /></label>
-                    <div className="edit-actions"><button className="secondary-button" type="button" onClick={onClose}>Cancel</button><button className="upload-button" type="submit" disabled={isSaving}><Save size={17} /> {isSaving ? 'Saving...' : 'Save changes'}</button></div>
+                    <div className="edit-actions"><button className="secondary-button" type="button" onClick={onClose} title="Cancel">Cancel</button><button className="upload-button" type="submit" disabled={isSaving} title="Save changes"><Save size={17} /> {isSaving ? 'Saving...' : 'Save changes'}</button></div>
                 </form>
             </section>
         </div>

@@ -207,7 +207,8 @@ button {
     gap: 9px;
     flex: 1;
     min-width: 220px;
-    padding: 10px 12px;
+    height: 38px;
+    padding: 0 12px;
     border: 1px solid var(--color-border-input);
     border-radius: 6px;
     color: var(--color-muted);
@@ -223,17 +224,36 @@ button {
 }
 
 .toolbar select {
-    padding: 10px 12px;
+    height: 38px;
+    padding: 0 12px;
     border: 1px solid var(--color-border-input);
     border-radius: 6px;
     color: var(--color-ink-soft);
     background: var(--color-surface);
 }
 
+.clear-filters-button {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 1px solid var(--color-border-input);
+    border-radius: 6px;
+    color: var(--color-ink-soft);
+    background: var(--color-surface);
+}
+
+.clear-filters-button:disabled {
+    color: var(--color-muted);
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
 .view-toggle {
     display: flex;
     border: 1px solid var(--color-border-input);
     border-radius: 6px;
+    flex-shrink: 0;
     overflow: hidden;
 }
 
@@ -252,11 +272,18 @@ button {
     background: var(--color-ink);
 }
 
+.tag-toolbar-row {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 0;
+}
+
 .tag-row {
     display: flex;
     flex-wrap: wrap;
     gap: 7px;
-    padding: 16px 0;
 }
 
 .tag {

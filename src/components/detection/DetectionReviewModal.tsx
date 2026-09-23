@@ -57,7 +57,7 @@ export function DetectionReviewModal({ file, items, isSaving, onChange, onToggle
             <section className="review-modal" role="dialog" aria-modal="true" aria-labelledby="review-title">
                 <div className="review-header">
                     <div><p className="eyebrow">Detection review</p><h2 id="review-title">Review {items.filter((item) => !item.removed).length} eligible objects</h2></div>
-                    <button className="icon-button" type="button" onClick={onClose} aria-label="Close review"><X size={18} /></button>
+                    <button className="icon-button" type="button" onClick={onClose} aria-label="Close review" title="Close"><X size={18} /></button>
                 </div>
                 {sourceUrl && <div className="review-source"><img className='source-image' src={sourceUrl} alt="Uploaded room" /></div>}
                 <div className="review-list">
@@ -72,12 +72,12 @@ export function DetectionReviewModal({ file, items, isSaving, onChange, onToggle
                             <textarea aria-label={`Object ${index + 1} description`} value={item.description} rows={2} onChange={(event) => onChange(index, { description: event.target.value })} />
                             <label className="review-value"><span>Est. value</span><span className="currency-input"><span>$</span><input aria-label={`Object ${index + 1} estimated value`} type="number" min="0" step="0.01" value={item.estimatedValue || ''} placeholder="0.00" onChange={(event) => onChange(index, { estimatedValue: Math.max(0, Number(event.target.value) || 0) })} /></span></label>
                         </div>
-                        <button className="icon-button danger" type="button" onClick={() => onToggleRemoved(index)} aria-label={item.removed ? `Restore ${item.name}` : `Remove ${item.name}`}>{item.removed ? <Upload size={17} /> : <Trash2 size={17} />}</button>
+                        <button className="icon-button danger" type="button" onClick={() => onToggleRemoved(index)} aria-label={item.removed ? `Restore ${item.name}` : `Remove ${item.name}`} title={item.removed ? 'Restore item' : 'Remove item'}>{item.removed ? <Upload size={17} /> : <Trash2 size={17} />}</button>
                     </div>)}
                 </div>
                 <div className="review-footer">
-                    <button className="secondary-button" type="button" onClick={onClose}>Discard</button>
-                    <button className="upload-button" type="button" disabled={isSaving || eligibleCount === 0} onClick={onSave}><Save size={17} /> {isSaving ? 'Saving...' : `Save ${eligibleCount} items`}</button>
+                    <button className="secondary-button" type="button" onClick={onClose} title="Discard this batch">Discard</button>
+                    <button className="upload-button" type="button" disabled={isSaving || eligibleCount === 0} onClick={onSave} title="Save eligible items"><Save size={17} /> {isSaving ? 'Saving...' : `Save ${eligibleCount} items`}</button>
                 </div>
             </section>
         </div>
