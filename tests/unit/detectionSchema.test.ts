@@ -7,6 +7,7 @@ const validItem = {
     description: 'A green upholstered chair.',
     suggestedTags: ['green'],
     confidence: 0.9,
+    estimatedValue: 80,
     bbox: { x: 0.1, y: 0.1, w: 0.4, h: 0.6 },
 };
 
@@ -27,7 +28,7 @@ describe('parseDetectionResponse', () => {
             }]
         })).toEqual([{
             name: 'Lamp', category: 'Decor', description: '', suggestedTags: ['brass', 'table'], confidence: 0.92,
-            bbox: { x: 0.1, y: 0.2, w: 0.30000000000000004, h: 0.6000000000000001 },
+            bbox: { x: 0.1, y: 0.2, w: 0.30000000000000004, h: 0.6000000000000001 }, estimatedValue: 0,
         }]);
     });
 

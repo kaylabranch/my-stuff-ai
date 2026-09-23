@@ -409,6 +409,7 @@ button {
     padding: 8px 9px;
     border: 1px solid #cfc7b9;
     border-radius: 5px;
+    font: 400 13px/1.45 'DM Sans', sans-serif;
     color: #211e1a;
     background: #fff;
 }
@@ -522,13 +523,17 @@ button {
 }
 
 .review-source {
-    height: 190px;
     margin-top: 20px;
     overflow: hidden;
     background: #ebe5d8;
+
+    &,
+    .source-image {
+        height: 190px
+    }
 }
 
-.review-source img,
+.review-source img:not(.source-image),
 .review-thumb img {
     display: block;
     width: auto;
@@ -542,4 +547,34 @@ button {
     display: grid;
     place-items: center;
     max-height: 190px;
+}
+
+.review-value {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #746e65;
+    font-size: 12px;
+}
+
+.review-value>span:first-child {
+    font-weight: 600;
+}
+
+.currency-input {
+    display: flex;
+    align-items: center;
+    width: 120px;
+    border: 1px solid #cfc7b9;
+    border-radius: 5px;
+    background: #fff;
+}
+
+.currency-input>span {
+    padding-left: 8px;
+    color: #837d74;
+}
+
+.currency-input input {
+    border: 0;
 }

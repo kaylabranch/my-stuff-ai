@@ -15,6 +15,7 @@ const detectedItemSchema = z.object({
     suggestedTags: z.array(z.string()),
     confidence: z.number().min(0).max(1),
     bbox: boundingBoxSchema,
+    estimatedValue: z.number().min(0),
 });
 
 export const detectionResponseSchema = z.object({
@@ -63,6 +64,7 @@ function normalizeItem(value: unknown) {
         : categoryAliases[rawCategory.toLowerCase()] || 'Other';
     const rawConfidence = asNumber(item.confidence ?? item.score, 0.5);
     const confidence = rawConfidence > 1 && rawConfidence <= 100 ? rawConfidence / 100 : rawConfidence;
+    const estimatedValue = Math.max(0, asNumber(item.estimatedValue ?? item.estimated_value ?? item.value, 0));
     const rawBox = item.bbox ?? item.boundingBox;
     const box = normalizeBoundingBox(rawBox);
     const scale = Math.max(Math.abs(box.x), Math.abs(box.y), Math.abs(box.w), Math.abs(box.h)) > 1 ? 1000 : 1;
@@ -75,6 +77,7 @@ function normalizeItem(value: unknown) {
             : typeof item.tags === 'string' ? item.tags.split(',').map((tag) => tag.trim()).filter(Boolean) : [],
         confidence,
         bbox: { x: clamp(box.x / scale), y: clamp(box.y / scale), w: clamp(box.w / scale), h: clamp(box.h / scale) },
+        estimatedValue,
     };
 }
 

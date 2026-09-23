@@ -59,10 +59,10 @@ export function DetectionReviewModal({ file, items, isSaving, onChange, onToggle
                     <div><p className="eyebrow">Detection review</p><h2 id="review-title">Review {items.filter((item) => !item.removed).length} eligible objects</h2></div>
                     <button className="icon-button" type="button" onClick={onClose} aria-label="Close review"><X size={18} /></button>
                 </div>
-                {sourceUrl && <div className="review-source"><img src={sourceUrl} alt="Uploaded room" /></div>}
+                {sourceUrl && <div className="review-source"><img className='source-image' src={sourceUrl} alt="Uploaded room" /></div>}
                 <div className="review-list">
                     {items.map((item, index) => <div className={item.removed ? 'review-item removed' : 'review-item'} key={`${item.name}-${index}`}>
-                        <div className="review-thumb">{thumbUrls[index] ? <img src={thumbUrls[index] || undefined} alt={`Crop of ${item.name}`} /> : <Camera size={20} />}<span>{Math.round(item.confidence * 100)}%</span></div>
+                        <div className="review-thumb">{thumbUrls[index] ? <img src={thumbUrls[index] || undefined} alt={`Crop of ${item.name}`} /> : <Camera size={20} />}<span title="AI Confidence Score">{Math.round(item.confidence * 100)}%</span></div>
                         <div className="review-fields">
                             <input aria-label={`Object ${index + 1} name`} value={item.name} onChange={(event) => onChange(index, { name: event.target.value })} />
                             <div className="review-controls">
@@ -70,6 +70,7 @@ export function DetectionReviewModal({ file, items, isSaving, onChange, onToggle
                                 <input aria-label={`Object ${index + 1} tags`} value={item.suggestedTags.join(', ')} placeholder="tags, comma separated" onChange={(event) => onChange(index, { suggestedTags: event.target.value.split(',').map((tag) => tag.trim()).filter(Boolean) })} />
                             </div>
                             <textarea aria-label={`Object ${index + 1} description`} value={item.description} rows={2} onChange={(event) => onChange(index, { description: event.target.value })} />
+                            <label className="review-value"><span>Est. value</span><span className="currency-input"><span>$</span><input aria-label={`Object ${index + 1} estimated value`} type="number" min="0" step="0.01" value={item.estimatedValue || ''} placeholder="0.00" onChange={(event) => onChange(index, { estimatedValue: Math.max(0, Number(event.target.value) || 0) })} /></span></label>
                         </div>
                         <button className="icon-button danger" type="button" onClick={() => onToggleRemoved(index)} aria-label={item.removed ? `Restore ${item.name}` : `Remove ${item.name}`}>{item.removed ? <Upload size={17} /> : <Trash2 size={17} />}</button>
                     </div>)}

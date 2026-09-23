@@ -38,4 +38,5 @@ export interface DetectedItem {
     suggestedTags: string[];
     confidence: number;
     bbox: BoundingBox;
+    estimatedValue: number;
 }

@@ -102,7 +102,7 @@ export function App() {
                         for (const item of eligible) {
                             let imageBlob: Blob;
                             try { imageBlob = await cropImageToBlob(reviewFile, item.bbox); } catch { imageBlob = reviewFile; }
-                            const record: InventoryItem = { id: `item_${Date.now()}_${Math.random().toString(36).slice(2)}`, name: item.name.trim(), category: item.category, description: item.description.trim(), tags: item.suggestedTags, imageBlob, estimatedValue: 0, createdAt: Date.now() };
+                            const record: InventoryItem = { id: `item_${Date.now()}_${Math.random().toString(36).slice(2)}`, name: item.name.trim(), category: item.category, description: item.description.trim(), tags: item.suggestedTags, imageBlob, estimatedValue: item.estimatedValue, createdAt: Date.now() };
                             await itemsRepository.put(record);
                             savedCount += 1;
                         }

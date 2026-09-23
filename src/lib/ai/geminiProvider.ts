@@ -6,7 +6,7 @@ const endpoint = (model: string, apiKey: string) =>
     `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
 const systemPrompt = `You are a home inventory vision assistant. Identify every distinct visible household object, including small or partially occluded objects. Treat matching groups as one set when appropriate. Return only JSON in this exact shape:
-{"items":[{"name":"Item name","category":"Furniture","description":"One sentence.","suggestedTags":["tag"],"confidence":0.95,"bbox":{"x":0.1,"y":0.1,"w":0.3,"h":0.4}}]}
+{"items":[{"name":"Item name","category":"Furniture","description":"One sentence.","suggestedTags":["tag"],"confidence":0.95,"estimatedValue":125,"bbox":{"x":0.1,"y":0.1,"w":0.3,"h":0.4}}]}
 Use only these categories: Furniture, Electronics, Appliances, Decor, Lighting, Clothing, Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other. Bounding boxes are normalized 0 to 1 and must be present for every item. Return at most 20 items.`;
 
 function extractJson(text: string): unknown {
