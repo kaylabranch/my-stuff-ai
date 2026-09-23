@@ -37,6 +37,6 @@ Each upload is processed independently. Saving the same photo more than once cur
 
 ## Current Scope
 
-Implemented: Gemini image analysis, staged analysis progress, modal detection review, editable names/categories/tags/descriptions/estimated values, remove/restore before saving, cropped Blob thumbnails, IndexedDB persistence, search, sorting, category filtering, tag filtering, grid/list views, and inventory statistics.
+Implemented: Gemini image analysis, staged analysis progress, modal detection review, editable names/categories/tags/descriptions/estimated values, remove/restore before saving, cropped Blob thumbnails, IndexedDB persistence, search, sorting, category filtering, tag filtering, grid/list views, inventory statistics, and entire-inventory PDF export with preview/download options.
 
-Planned: item detail editing and deletion, PDF export, manual object addition, richer image interaction, and duplicate-upload detection.
+Planned: manual object addition, richer image interaction, filtered PDF export, and duplicate-upload detection.

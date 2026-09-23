@@ -15,6 +15,7 @@ import { AnalysisProgress } from '../components/feedback/AnalysisProgress';
 import { ConfirmModal } from '../components/feedback/ConfirmModal';
 import { ItemEditModal } from '../components/inventory/ItemEditModal';
 import type { AnalysisProgress as AnalysisProgressUpdate } from '../lib/ai/geminiProvider';
+import { ExportPdfModal } from '../components/export/ExportPdfModal';
 
 const initialFilters: InventoryFilters = { query: '', category: '', tags: [], sort: 'newest' };
 
@@ -29,6 +30,7 @@ export function App() {
     const [isSaving, setIsSaving] = useState(false);
     const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
     const [confirmAction, setConfirmAction] = useState<'clear' | InventoryItem | null>(null);
+    const [isExportOpen, setIsExportOpen] = useState(false);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const visibleItems = useMemo(() => filterAndSortInventory(items, filters), [items, filters]);
     const categories = [...new Set(items.map((item) => item.category))].sort();
@@ -90,7 +92,7 @@ export function App() {
                 }).catch((caught: unknown) => { setAnalysisProgress(null); setAnalysisStatus(caught instanceof Error ? caught.message : 'Image analysis failed.'); });
                 event.target.value = '';
             }} />
-            <TopBar itemCount={items.length} onClear={() => setConfirmAction('clear')} />
+            <TopBar itemCount={items.length} onClear={() => setConfirmAction('clear')} onExport={() => setIsExportOpen(true)} />
 
             <WorkspaceIntro onUpload={() => fileInputRef.current?.click()} />
 
@@ -144,6 +146,7 @@ export function App() {
                     await reload();
                 }).finally(() => setIsSaving(false));
             }} />}
+            {isExportOpen && <ExportPdfModal items={items} onClose={() => setIsExportOpen(false)} />}
         </main>
     );
 }
