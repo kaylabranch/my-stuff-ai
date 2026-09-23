@@ -298,6 +298,25 @@ button {
     padding: 12px;
 }
 
+.item-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.item-meta .item-category {
+    margin-bottom: 8px;
+}
+
+.item-value {
+    margin-bottom: 8px;
+    color: var(--color-accent);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
 .item-card h2 {
     margin: 0 0 5px;
     font: 600 20px 'Playfair Display', serif;
@@ -602,4 +621,47 @@ button {
 
 .currency-input input {
     border: 0;
+}
+
+.analysis-status-header {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 8px;
+}
+
+.analysis-progress-track {
+    position: relative;
+    height: 5px;
+    overflow: hidden;
+    border-radius: 999px;
+    background: var(--color-border);
+}
+
+.analysis-progress-track>span {
+    display: block;
+    height: 100%;
+    border-radius: inherit;
+    background: var(--color-accent);
+    transition: width .2s ease;
+}
+
+.analysis-progress-track.indeterminate::after {
+    content: '';
+    position: absolute;
+    inset: 0 auto 0 -35%;
+    width: 35%;
+    border-radius: inherit;
+    background: var(--color-accent);
+    animation: analysis-progress 1.2s ease-in-out infinite;
+}
+
+@keyframes analysis-progress {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(385%);
+    }
 }
