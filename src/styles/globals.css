@@ -289,7 +289,7 @@ button {
     display: grid;
     justify-items: center;
     gap: 9px;
-    min-height: 280px;
+    min-height: 250px;
     align-content: center;
     color: #b56b29;
     text-align: center;
