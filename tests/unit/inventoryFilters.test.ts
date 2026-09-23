@@ -9,7 +9,7 @@ const items: InventoryItem[] = [
 
 describe('filterAndSortInventory', () => {
     it('combines query, category, and all selected tags', () => {
-        expect(filterAndSortInventory(items, { query: 'chair', category: 'Furniture', room: '', tags: ['green', 'living-room'], sort: 'newest' })).toEqual([items[0]]);
+        expect(filterAndSortInventory(items, { query: 'chair', category: 'Furniture', room: '', tags: ['green', 'living-room'], sort: 'az' })).toEqual([items[0]]);
     });
 
     it('sorts values descending', () => {
@@ -17,6 +17,6 @@ describe('filterAndSortInventory', () => {
     });
 
     it('filters by room', () => {
-        expect(filterAndSortInventory(items, { query: '', category: '', room: 'Office', tags: [], sort: 'newest' })).toEqual([items[1]]);
+        expect(filterAndSortInventory(items, { query: '', category: '', room: 'Office', tags: [], sort: 'az' })).toEqual([items[1]]);
     });
 });

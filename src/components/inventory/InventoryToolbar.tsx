@@ -12,13 +12,13 @@ interface InventoryToolbarProps {
 }
 
 export function InventoryToolbar({ filters, tags, rooms, view, onFilterChange, onClearFilters, onViewChange }: InventoryToolbarProps) {
-    const hasActiveFilters = filters.query !== '' || filters.category !== '' || filters.room !== '' || filters.tags.length > 0 || filters.sort !== 'newest';
+    const hasActiveFilters = filters.query !== '' || filters.category !== '' || filters.room !== '' || filters.tags.length > 0 || filters.sort !== 'az';
     return (
         <>
             <div className="toolbar">
                 <label className="search-field"><Search size={17} /><span className="visually-hidden">Search inventory</span><input value={filters.query} onChange={(event) => onFilterChange('query', event.target.value)} placeholder="Search your inventory" /></label>
                 <select value={filters.sort} onChange={(event) => onFilterChange('sort', event.target.value as InventoryFilters['sort'])} aria-label="Sort inventory">
-                    <option value="newest">Newest first</option><option value="oldest">Oldest first</option><option value="az">Name A-Z</option><option value="za">Name Z-A</option><option value="value-hi">Value high to low</option><option value="value-lo">Value low to high</option>
+                    <option value="az">Name A-Z</option><option value="za">Name Z-A</option><option value="value-hi">Value high to low</option><option value="value-lo">Value low to high</option>
                 </select>
                 <select value={filters.category} onChange={(event) => onFilterChange('category', event.target.value as InventoryFilters['category'])} aria-label="Filter by category">
                     <option value="">All categories</option>{CATEGORIES.map((category) => <option key={category} value={category}>{category}</option>)}

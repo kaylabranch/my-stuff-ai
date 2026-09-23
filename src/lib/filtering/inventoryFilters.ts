@@ -13,14 +13,12 @@ export function filterAndSortInventory(items: InventoryItem[], filters: Inventor
 
     return result.sort((first, second) => {
         switch (filters.sort) {
-            case 'oldest': return first.createdAt - second.createdAt;
-            case 'az': return first.name.localeCompare(second.name);
             case 'za': return second.name.localeCompare(first.name);
             case 'category': return first.category.localeCompare(second.category);
             case 'value-hi': return second.estimatedValue - first.estimatedValue;
             case 'value-lo': return first.estimatedValue - second.estimatedValue;
-            case 'newest':
-            default: return second.createdAt - first.createdAt;
+            case 'az':
+            default: return first.name.localeCompare(second.name);
         }
     });
 }

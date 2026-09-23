@@ -110,8 +110,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 
 ### 5. Inventory Browsing
 - **Search:** free-text match against name, description, and tags.
-- **Sort:** newest first, oldest first, name A→Z, name Z→A, by category,
-  value high→low, value low→high.
+- **Sort:** name A→Z, name Z→A, by category, value high→low, value low→high.
 - **Category filter:** single-select dropdown, populated dynamically from
   items actually in the inventory.
 - **Tag filters:** multi-select chips, populated dynamically; selecting

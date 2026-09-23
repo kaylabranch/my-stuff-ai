@@ -17,7 +17,7 @@ import { ItemEditModal } from '../components/inventory/ItemEditModal';
 import type { AnalysisProgress as AnalysisProgressUpdate } from '../lib/ai/geminiProvider';
 import { ExportPdfModal } from '../components/export/ExportPdfModal';
 
-const initialFilters: InventoryFilters = { query: '', category: '', room: '', tags: [], sort: 'newest' };
+const initialFilters: InventoryFilters = { query: '', category: '', room: '', tags: [], sort: 'az' };
 
 export function App() {
     const { items, isLoading, error, reload } = useInventory();

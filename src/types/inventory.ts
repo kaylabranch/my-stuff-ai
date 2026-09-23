@@ -23,7 +23,7 @@ export interface InventoryFilters {
     category: Category | '';
     room: string;
     tags: string[];
-    sort: 'newest' | 'oldest' | 'az' | 'za' | 'category' | 'value-hi' | 'value-lo';
+    sort: 'az' | 'za' | 'category' | 'value-hi' | 'value-lo';
 }
 
 export interface BoundingBox {
