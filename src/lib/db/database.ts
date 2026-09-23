@@ -32,4 +32,7 @@ export const itemsRepository = {
     async delete(id: string) {
         await (await getDatabase()).delete('items', id);
     },
+    async clear() {
+        await (await getDatabase()).clear('items');
+    },
 };

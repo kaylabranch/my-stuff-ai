@@ -12,6 +12,8 @@ import { StatsRow } from '../components/inventory/StatsRow';
 import { InventorySection } from '../components/inventory/InventorySection';
 import { WorkspaceIntro } from '../components/layout/WorkspaceIntro';
 import { AnalysisProgress } from '../components/feedback/AnalysisProgress';
+import { ConfirmModal } from '../components/feedback/ConfirmModal';
+import { ItemEditModal } from '../components/inventory/ItemEditModal';
 import type { AnalysisProgress as AnalysisProgressUpdate } from '../lib/ai/geminiProvider';
 
 const initialFilters: InventoryFilters = { query: '', category: '', tags: [], sort: 'newest' };
@@ -25,6 +27,8 @@ export function App() {
     const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
     const [reviewFile, setReviewFile] = useState<File | null>(null);
     const [isSaving, setIsSaving] = useState(false);
+    const [editingItem, setEditingItem] = useState<InventoryItem | null>(null);
+    const [confirmAction, setConfirmAction] = useState<'clear' | InventoryItem | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
     const visibleItems = useMemo(() => filterAndSortInventory(items, filters), [items, filters]);
     const categories = [...new Set(items.map((item) => item.category))].sort();
@@ -54,6 +58,18 @@ export function App() {
         setAnalysisProgress(null);
     };
 
+    const deleteItem = async (item: InventoryItem) => {
+        await itemsRepository.delete(item.id);
+        setConfirmAction(null);
+        await reload();
+    };
+
+    const clearInventory = async () => {
+        await itemsRepository.clear();
+        setConfirmAction(null);
+        await reload();
+    };
+
     return (
         <main className="app-shell">
             <input ref={fileInputRef} className="visually-hidden" type="file" accept="image/jpeg,image/png,image/heic,image/heif" onChange={(event) => {
@@ -74,7 +90,7 @@ export function App() {
                 }).catch((caught: unknown) => { setAnalysisProgress(null); setAnalysisStatus(caught instanceof Error ? caught.message : 'Image analysis failed.'); });
                 event.target.value = '';
             }} />
-            <TopBar itemCount={items.length} />
+            <TopBar itemCount={items.length} onClear={() => setConfirmAction('clear')} />
 
             <WorkspaceIntro onUpload={() => fileInputRef.current?.click()} />
 
@@ -83,7 +99,7 @@ export function App() {
 
             <StatsRow itemCount={items.length} categoryCount={categories.length} tagCount={tags.length} estimatedValue={items.reduce((total, item) => total + item.estimatedValue, 0)} />
 
-            <InventorySection items={items} visibleItems={visibleItems} filters={filters} tags={tags} view={view} isLoading={isLoading} error={error} onFilterChange={updateFilter} onViewChange={setView} />
+            <InventorySection items={items} visibleItems={visibleItems} filters={filters} tags={tags} view={view} isLoading={isLoading} error={error} onFilterChange={updateFilter} onViewChange={setView} onEdit={setEditingItem} onDelete={setConfirmAction} />
 
             {reviewFile && <DetectionReviewModal
                 file={reviewFile}
@@ -114,6 +130,20 @@ export function App() {
                     }
                 }}
             />}
+            {confirmAction && <ConfirmModal
+                title={confirmAction === 'clear' ? 'Clear your inventory?' : `Delete ${confirmAction.name}?`}
+                message={confirmAction === 'clear' ? 'This will permanently remove every saved item from this device.' : 'This item will be permanently removed from your inventory.'}
+                confirmLabel={confirmAction === 'clear' ? 'Clear inventory' : 'Delete item'}
+                onCancel={() => setConfirmAction(null)}
+                onConfirm={() => void (confirmAction === 'clear' ? clearInventory() : deleteItem(confirmAction))}
+            />}
+            {editingItem && <ItemEditModal item={editingItem} isSaving={isSaving} onClose={() => setEditingItem(null)} onSave={(changes) => {
+                setIsSaving(true);
+                void itemsRepository.put({ ...editingItem, ...changes }).then(async () => {
+                    setEditingItem(null);
+                    await reload();
+                }).finally(() => setIsSaving(false));
+            }} />}
         </main>
     );
 }
