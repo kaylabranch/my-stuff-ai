@@ -42,7 +42,7 @@ Each upload is processed independently. Saving the same photo more than once cur
 Features include:
 - Gemini image analysis, detection, and cropping
 - Item detection review
-- Room labeling per upload (auto-suggested from existing rooms, added as a tag on every item in that room)
+- Optional room labeling per upload (auto-suggested from existing rooms, added as a tag on every item in that room)
 - Editable names/categories/rooms/tags/descriptions/estimated values
 - IndexedDB persistence
 - Search, sorting, category filtering, room filtering, tag filtering

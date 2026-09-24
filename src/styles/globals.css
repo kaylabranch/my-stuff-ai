@@ -492,6 +492,32 @@ button {
     font: 600 26px 'Playfair Display', serif;
 }
 
+.review-room-field {
+    display: grid;
+    gap: 7px;
+    margin-top: 20px;
+    padding: 12px 14px 14px;
+    border: 1px solid var(--color-border);
+    color: var(--color-ink-soft);
+    background: var(--color-surface-accent);
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.review-room-field input {
+    width: 100%;
+    padding: 10px 11px;
+    border: 1px solid var(--color-border-input);
+    border-radius: 5px;
+    color: var(--color-ink);
+    background: var(--color-white);
+}
+
+.review-room-field input:focus {
+    outline: 3px solid rgba(181, 107, 41, .16);
+    border-color: var(--color-accent);
+}
+
 .review-list {
     display: grid;
     gap: 10px;
