@@ -1,4 +1,4 @@
-import { FileType2, Trash2 } from 'lucide-react';
+import { FileDown, Trash2 } from 'lucide-react';
 
 interface TopBarProps {
     itemCount: number;
@@ -25,7 +25,7 @@ export function TopBar({ itemCount, onClear, onExport }: TopBarProps) {
                     aria-label="Export inventory to PDF"
                     title="Export PDF"
                 >
-                    <FileType2 size={17} />
+                    <FileDown size={17} />
                 </button>
                 <button
                     className="topbar-icon-button clear"
