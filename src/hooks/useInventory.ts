@@ -19,7 +19,9 @@ export function useInventory() {
         }
     }, []);
 
-    useEffect(() => { void reload(); }, [reload]);
+    useEffect(() => {
+        void reload();
+    }, [reload]);
 
     return { items, isLoading, error, reload };
 }

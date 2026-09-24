@@ -28,7 +28,7 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
     };
     const rule = () => {
         document.setDrawColor(223, 217, 205);
-        document.setLineWidth(.25);
+        document.setLineWidth(0.25);
         document.line(margin, y, pageWidth - margin, y);
     };
     const ensureSpace = (height: number) => {
@@ -48,7 +48,11 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
     document.text(options.title || 'My Home Inventory', margin, y);
     y += 8;
     font('normal', 9, muted);
-    document.text(`Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`, margin, y);
+    document.text(
+        `Generated ${new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}`,
+        margin,
+        y,
+    );
     y += 7;
     rule();
     y += 10;
@@ -124,7 +128,11 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
         if (options.includeImages && item.imageBlob) {
             const image = await blobToDataUrl(item.imageBlob);
             if (image) {
-                try { document.addImage(image, 'JPEG', x, y - 2, 24, 24, undefined, 'FAST'); } catch { /* image fallback */ }
+                try {
+                    document.addImage(image, 'JPEG', x, y - 2, 24, 24, undefined, 'FAST');
+                } catch {
+                    /* image fallback */
+                }
             }
             x += 29;
         }
@@ -135,11 +143,22 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
         document.text(item.room ? `${item.room} | ${item.category}` : item.category, x, y + 8);
         if (item.description) {
             font('normal', 7, muted);
-            document.text(document.splitTextToSize(item.description, contentWidth - (x - margin) - valueOffset - 4).slice(0, 2), x, y + 13);
+            document.text(
+                document.splitTextToSize(item.description, contentWidth - (x - margin) - valueOffset - 4).slice(0, 2),
+                x,
+                y + 13,
+            );
         }
         if (options.includeTags && item.tags.length) {
             font('normal', 6.5, accent);
-            document.text(item.tags.slice(0, 5).map((tag) => `#${tag}`).join('  '), x, y + (item.description ? 22 : 14));
+            document.text(
+                item.tags
+                    .slice(0, 5)
+                    .map((tag) => `#${tag}`)
+                    .join('  '),
+                x,
+                y + (item.description ? 22 : 14),
+            );
         }
         if (options.includeValues) {
             font('bold', 9, accent);

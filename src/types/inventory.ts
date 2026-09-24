@@ -1,7 +1,19 @@
 export const CATEGORIES = [
-    'Furniture', 'Electronics', 'Appliances', 'Decor', 'Lighting',
-    'Clothing', 'Books & Media', 'Kitchenware', 'Tools', 'Sports',
-    'Art', 'Plants', 'Toys', 'Storage', 'Other',
+    'Furniture',
+    'Electronics',
+    'Appliances',
+    'Decor',
+    'Lighting',
+    'Clothing',
+    'Books & Media',
+    'Kitchenware',
+    'Tools',
+    'Sports',
+    'Art',
+    'Plants',
+    'Toys',
+    'Storage',
+    'Other',
 ] as const;
 
 export type Category = (typeof CATEGORIES)[number];

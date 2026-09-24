@@ -1,6 +1,7 @@
 # Copilot Instructions — My Stuff AI
 
 ## Project Overview
+
 My Stuff AI is a personal home-inventory application. Users upload photos of
 rooms or spaces; AI vision analyzes each photo, detects individual objects,
 and lets the user review, edit, and save them as inventory items. The app
@@ -15,6 +16,7 @@ evolve, but the requirements below should still hold.
 ---
 
 ## Tech Stack
+
 - **Frontend:** Modern React (function components + hooks only — no class
   components), TypeScript.
 - **Storage:** browser IndexedDB (local-first, per-device persistence, no
@@ -30,27 +32,30 @@ evolve, but the requirements below should still hold.
 ## Data Model
 
 ### Item record
-| Field | Type | Notes |
-|---|---|---|
-| `id` | string | Unique, e.g. `item_<timestamp>_<random>` |
-| `name` | string | Editable, required |
-| `category` | string | One of the fixed category list (below) |
-| `description` | string | Optional, 1-sentence AI-generated or user-edited |
-| `tags` | string[] | Free-form, comma-separated in UI |
-| `imageBlob` | Blob | Cropped thumbnail image, stored natively in IndexedDB (not a base64 data URL — avoids ~33% size overhead and keeps React state light) |
-| `estimatedValue` | number | Optional, defaults to 0 |
-| `createdAt` | number (timestamp) | Set on save, used for sorting |
+
+| Field            | Type               | Notes                                                                                                                                 |
+| ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | string             | Unique, e.g. `item_<timestamp>_<random>`                                                                                              |
+| `name`           | string             | Editable, required                                                                                                                    |
+| `category`       | string             | One of the fixed category list (below)                                                                                                |
+| `description`    | string             | Optional, 1-sentence AI-generated or user-edited                                                                                      |
+| `tags`           | string[]           | Free-form, comma-separated in UI                                                                                                      |
+| `imageBlob`      | Blob               | Cropped thumbnail image, stored natively in IndexedDB (not a base64 data URL — avoids ~33% size overhead and keeps React state light) |
+| `estimatedValue` | number             | Optional, defaults to 0                                                                                                               |
+| `createdAt`      | number (timestamp) | Set on save, used for sorting                                                                                                         |
 
 - Display images via `URL.createObjectURL(item.imageBlob)`; revoke object
   URLs on unmount/list changes to avoid memory leaks.
 
 ### Fixed category list
+
 Furniture, Electronics, Appliances, Decor, Lighting, Clothing,
 Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 
 ---
 
 ## AI Vision
+
 - A single Gemini vision call returns name, category, description, tags,
   confidence, and bounding box for each detected object — no separate
   localization/detection service.
@@ -70,6 +75,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 ## Functional Requirements
 
 ### 1. Photo Upload
+
 - Support drag-and-drop **and** click-to-browse file selection.
 - Accept image types (JPG, PNG, HEIC); reject non-image files with a
   user-visible message.
@@ -77,6 +83,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
   through the detection flow.
 
 ### 2. AI Object Detection
+
 - Request `name`, `category` (constrained to the fixed list),
   `description`, `suggestedTags`, `confidence` (0–1), and a normalized
   `bbox` (`x`, `y`, `w`, `h` in 0.0–1.0) for every detected object.
@@ -89,6 +96,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
   malformed response) without crashing the review flow.
 
 ### 3. Detection Review (pre-save)
+
 - Show the uploaded photo alongside a list of detected items.
 - Generate a cropped thumbnail Blob from the source image using each
   item's `bbox` (with small padding), rendered client-side.
@@ -104,11 +112,13 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 - Allow user to click on an object in the photo that was NOT detected to add it to this list. This should trigger a prompt to enter the necessary details for the new item.
 
 ### 4. Inventory Storage
+
 - Persist saved items (including image Blobs) in IndexedDB so the
   inventory survives a page reload.
 - Support create, read, update, delete for individual items.
 
 ### 5. Inventory Browsing
+
 - **Search:** free-text match against name, description, and tags.
 - **Sort:** name A→Z, name Z→A, by category, value high→low, value low→high.
 - **Category filter:** single-select dropdown, populated dynamically from
@@ -122,6 +132,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
   matching current filters — these should read differently.
 
 ### 6. Item Detail & Editing
+
 - Selecting an item opens a detail view showing image, name, category,
   description, tags, estimated value, and date added.
 - All editable fields must be saveable individually and deletable, each
@@ -129,12 +140,14 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 - Deleting an item should ask for confirmation before removing it.
 
 ### 7. Stats
+
 - Show running totals: total item count, distinct category count, distinct
   tag count, and total estimated value.
 - Estimated value stat must reflect the **currently filtered view** when a
   filter/search is active, and be labeled to make that clear.
 
 ### 8. PDF Export
+
 - Let the user choose export scope: current filtered view vs. entire
   inventory (each labeled with an item count).
 - Let the user toggle what's included: summary/category totals, item
@@ -150,6 +163,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 ---
 
 ## Non-Functional Requirements
+
 - **Local-first / offline-friendly:** browsing, editing, and deleting
   existing inventory items should not require network access; only AI
   detection needs it.
@@ -167,11 +181,13 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 ## General Coding Guidelines
 
 ### Secret Handling
+
 - Never read, print, summarize, or include the contents of `.env`, `.env.local`, or any other secret-bearing file in tool output or responses.
 - When environment configuration must be checked, inspect only file names, key names, or redacted values, and ask the user to verify secret values locally.
 - Never place API keys in source code, screenshots, logs, tests, commits, or user-facing bundles.
 
 ### Principles
+
 - **Simplicity:** write code that is easy to read, understand, and
   maintain. Avoid unnecessary complexity.
 - **Modularity:** organize code into small, reusable units — e.g. separate
@@ -190,12 +206,14 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
   deprecated APIs or patterns.
 
 ### Language and Framework
+
 - TypeScript throughout; avoid `any` — type the item model, detection
   response schema, and IndexedDB layer explicitly.
 - Use the latest stable React and TypeScript conventions (hooks, not
   lifecycle classes; function components only).
 
 ### Naming Conventions
+
 - Use descriptive, meaningful names for variables, functions, components,
   and types.
 - Avoid abbreviations or single-letter names unless universally understood
@@ -204,6 +222,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
   types/interfaces, UPPER_CASE for constants (e.g. `CATEGORIES`).
 
 ### Code Reuse and Utilities
+
 - Prefer existing functions/hooks over writing new ones with overlapping
   behavior.
 - Avoid duplicating logic — factor repeated code (e.g. IndexedDB CRUD,
@@ -216,6 +235,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 ---
 
 ## Documentation
+
 - **README:** must be kept current as features are added or changed —
   setup instructions, environment variables (e.g. Gemini API key),
   available scripts, and a summary of app features.
@@ -224,14 +244,15 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
   Copilot's guidance never drifts from the actual app behavior.
 
 ## Testing
+
 - Write unit tests for all new features and bug fixes.
 - Cover edge cases and failure scenarios specific to this app, at minimum:
-  - Malformed/unexpected AI detection responses.
-  - Bounding boxes at or near the image edges, zero-size, or missing.
-  - Filter/search/sort combinations, including empty-result states.
-  - IndexedDB read/write/delete, including failure handling.
-  - PDF export with each include-option combination (images on/off,
-    values on/off, etc.).
+    - Malformed/unexpected AI detection responses.
+    - Bounding boxes at or near the image edges, zero-size, or missing.
+    - Filter/search/sort combinations, including empty-result states.
+    - IndexedDB read/write/delete, including failure handling.
+    - PDF export with each include-option combination (images on/off,
+      values on/off, etc.).
 - Use Vitest + React Testing Library consistently; keep tests readable and
   maintainable, not just passing.
 - When modifying existing code, update or add tests in the same change so
@@ -240,6 +261,7 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 ---
 
 ## Explicit Non-Goals (for now)
+
 - No user accounts / multi-device sync — inventory is per-device/local.
 - No server-side storage of uploaded photos or item data.
 - No editing of the AI-generated bounding boxes themselves (only the

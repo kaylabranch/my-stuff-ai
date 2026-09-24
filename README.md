@@ -42,6 +42,7 @@ Each upload is processed independently. Saving the same photo more than once cur
 ## App Details
 
 Features include:
+
 - Gemini image analysis, detection, and cropping
 - Item detection review
 - Optional room labeling per upload (auto-suggested from existing rooms, added as a tag on every item in that room)

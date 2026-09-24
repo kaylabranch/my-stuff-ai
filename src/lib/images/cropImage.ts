@@ -26,7 +26,17 @@ export async function cropImageToBlob(file: File, boundingBox: BoundingBox): Pro
         canvas.height = 240;
         const context = canvas.getContext('2d');
         if (!context) throw new Error('Image crop is not supported in this browser.');
-        context.drawImage(image, x * image.naturalWidth, y * image.naturalHeight, width * image.naturalWidth, height * image.naturalHeight, 0, 0, canvas.width, canvas.height);
+        context.drawImage(
+            image,
+            x * image.naturalWidth,
+            y * image.naturalHeight,
+            width * image.naturalWidth,
+            height * image.naturalHeight,
+            0,
+            0,
+            canvas.width,
+            canvas.height,
+        );
         return await canvasToBlob(canvas);
     } finally {
         URL.revokeObjectURL(sourceUrl);
@@ -44,6 +54,10 @@ function loadImage(sourceUrl: string): Promise<HTMLImageElement> {
 
 function canvasToBlob(canvas: HTMLCanvasElement): Promise<Blob> {
     return new Promise((resolve, reject) => {
-        canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error('The image crop could not be saved.')), 'image/jpeg', 0.86);
+        canvas.toBlob(
+            (blob) => (blob ? resolve(blob) : reject(new Error('The image crop could not be saved.'))),
+            'image/jpeg',
+            0.86,
+        );
     });
 }

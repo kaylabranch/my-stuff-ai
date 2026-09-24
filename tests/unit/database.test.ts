@@ -19,7 +19,15 @@ describe('itemsRepository', () => {
         await itemsRepository.put(item);
         const saved = await itemsRepository.list();
         expect(saved).toHaveLength(1);
-        expect(saved[0]).toMatchObject({ id: item.id, name: item.name, category: item.category, description: item.description, tags: item.tags, estimatedValue: item.estimatedValue, createdAt: item.createdAt });
+        expect(saved[0]).toMatchObject({
+            id: item.id,
+            name: item.name,
+            category: item.category,
+            description: item.description,
+            tags: item.tags,
+            estimatedValue: item.estimatedValue,
+            createdAt: item.createdAt,
+        });
         expect(saved[0].imageBlob).toBeDefined();
 
         const updated = { ...item, name: 'Updated lamp', estimatedValue: 60 };

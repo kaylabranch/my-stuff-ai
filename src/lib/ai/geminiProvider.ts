@@ -25,7 +25,10 @@ function extractJson(text: string): unknown {
     }
 }
 
-export async function analyzeImageWithGemini(file: File, onProgress?: (update: AnalysisProgress) => void): Promise<DetectedItem[]> {
+export async function analyzeImageWithGemini(
+    file: File,
+    onProgress?: (update: AnalysisProgress) => void,
+): Promise<DetectedItem[]> {
     const apiKey = import.meta.env.VITE_GEMINI_API_KEY as string | undefined;
     const model = (import.meta.env.VITE_GEMINI_MODEL as string | undefined) || DEFAULT_MODEL;
     if (!apiKey) throw new Error('Set VITE_GEMINI_API_KEY in .env.local before analyzing images.');
@@ -37,17 +40,23 @@ export async function analyzeImageWithGemini(file: File, onProgress?: (update: A
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
             systemInstruction: { parts: [{ text: systemPrompt }] },
-            contents: [{
-                role: 'user', parts: [
-                    { inlineData: { mimeType: file.type, data: base64 } },
-                    { text: 'Identify all inventory objects in this image.' },
-                ]
-            }],
+            contents: [
+                {
+                    role: 'user',
+                    parts: [
+                        { inlineData: { mimeType: file.type, data: base64 } },
+                        { text: 'Identify all inventory objects in this image.' },
+                    ],
+                },
+            ],
             generationConfig: { responseMimeType: 'application/json', temperature: 0.1 },
         }),
     });
 
-    const payload = await response.json().catch(() => null) as { error?: { message?: string }; candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }> } | null;
+    const payload = (await response.json().catch(() => null)) as {
+        error?: { message?: string };
+        candidates?: Array<{ content?: { parts?: Array<{ text?: string }> } }>;
+    } | null;
     if (!response.ok) throw new Error(payload?.error?.message || `Gemini request failed (${response.status}).`);
     onProgress?.({ phase: 'parsing', progress: 92 });
     const text = payload?.candidates?.[0]?.content?.parts?.map((part) => part.text || '').join('') || '';
