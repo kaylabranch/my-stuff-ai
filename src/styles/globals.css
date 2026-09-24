@@ -76,8 +76,15 @@ button {
 }
 
 .topbar-icon-button:hover:not(:disabled) {
-    color: var(--color-error);
-    border-color: var(--color-error);
+    &.clear {
+        border-color: var(--color-error);
+        color: var(--color-error);
+    }
+
+    &.download {
+        border-color: var(--color-accent);
+        color: var(--color-accent);
+    }
 }
 
 .topbar-icon-button:disabled {
@@ -111,7 +118,7 @@ button {
     align-items: end;
     justify-content: space-between;
     gap: 24px;
-    padding: 58px 0 36px;
+    padding: 34px 0;
 }
 
 .eyebrow,
@@ -126,7 +133,7 @@ button {
 
 .workspace-intro h1 {
     margin: 0;
-    font: 600 clamp(35px, 5vw, 62px)/1.04 'Playfair Display', serif;
+    font: 600 clamp(35px, 5vw, 58px)/1.04 'Playfair Display', serif;
     letter-spacing: -.02em;
 }
 
@@ -153,7 +160,7 @@ button {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     gap: 1px;
-    margin-bottom: 40px;
+    margin-bottom: 30px;
     border: 1px solid var(--color-border);
     background: var(--color-border);
 }
@@ -162,7 +169,7 @@ button {
     display: flex;
     flex-direction: column;
     gap: 5px;
-    padding: 18px 20px;
+    padding: 12px 20px;
     background: var(--color-surface);
 }
 
