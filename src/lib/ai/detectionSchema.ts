@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { CATEGORIES, type DetectedItem } from '../../types/inventory';
+import { MAX_DETECTED_ITEMS } from './detectionPrompt';
 
 const boundingBoxSchema = z.object({
     x: z.number().min(0).max(1),
@@ -19,7 +20,7 @@ const detectedItemSchema = z.object({
 });
 
 export const detectionResponseSchema = z.object({
-    items: z.array(detectedItemSchema).max(20),
+    items: z.array(detectedItemSchema).max(MAX_DETECTED_ITEMS),
 });
 
 const categoryAliases: Record<string, (typeof CATEGORIES)[number]> = {
@@ -136,7 +137,9 @@ export function parseDetectionResponse(value: unknown): DetectedItem[] {
             : value && typeof value === 'object' && Array.isArray((value as { objects?: unknown }).objects)
               ? (value as { objects: unknown[] }).objects
               : [];
-    const result = detectionResponseSchema.safeParse({ items: rawItems.map(normalizeItem) });
+    const result = detectionResponseSchema.safeParse({
+        items: rawItems.slice(0, MAX_DETECTED_ITEMS).map(normalizeItem),
+    });
     if (!result.success) {
         const issue = result.error.issues[0];
         throw new Error(

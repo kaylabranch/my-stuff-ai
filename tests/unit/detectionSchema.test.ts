@@ -16,6 +16,13 @@ describe('parseDetectionResponse', () => {
         expect(parseDetectionResponse({ items: [validItem] })).toEqual([validItem]);
     });
 
+    it('keeps only the first 20 items instead of rejecting longer responses', () => {
+        const items = Array.from({ length: 25 }, (_, index) => ({ ...validItem, name: `Item ${index}` }));
+        const parsed = parseDetectionResponse({ items });
+        expect(parsed).toHaveLength(20);
+        expect(parsed[19].name).toBe('Item 19');
+    });
+
     it('rejects malformed or unsafe model data', () => {
         expect(() => parseDetectionResponse({ items: [{ ...validItem, name: '' }] })).toThrow(
             /invalid detection response/,

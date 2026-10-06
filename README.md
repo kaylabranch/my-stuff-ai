@@ -21,7 +21,7 @@ npm test
 npm run build
 ```
 
-Gemini returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal.
+Gemini returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal. At most 20 items are detected per photo (`MAX_DETECTED_ITEMS` in `src/lib/ai/detectionPrompt.ts`); any extras in a response are dropped.
 
 The browser never sees the API key: it posts the image to a Netlify Function (`netlify/functions/analyze.mts`), which calls Gemini. Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`) in Netlify's environment variables, without a `VITE_` prefix. For local use, create `.env.local` containing `GEMINI_API_KEY=...` (optionally `GEMINI_MODEL=...`) and run `npm run dev`; a Vite dev middleware serves the function and reads the key from that file (restart after editing it). Google AI Studio's free tier is rate-limited, and you should review Google's data-use settings before sending private home photos.
 

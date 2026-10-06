@@ -1,43 +1,12 @@
-import type {} from '@netlify/functions';
+﻿import type {} from '@netlify/functions';
+import {
+    DETECTION_JSON_SCHEMA,
+    DETECTION_SYSTEM_PROMPT,
+    DETECTION_USER_INSTRUCTION,
+} from '../../src/lib/ai/detectionPrompt';
 
 const DEFAULT_MODEL = 'gemini-3.5-flash-lite';
 const MAX_BASE64_LENGTH = 14_000_000;
-
-const systemPrompt = `You are a home inventory vision assistant. Identify every distinct visible household object, including small or partially occluded objects. Treat matching groups as one set when appropriate. Return only JSON in this exact shape:
-{"items":[{"name":"Item name","category":"Furniture","description":"One sentence.","suggestedTags":["tag"],"confidence":0.95,"estimatedValue":125,"bbox":{"x":0.1,"y":0.1,"w":0.3,"h":0.4}}]}
-Use only these categories: Furniture, Electronics, Appliances, Decor, Lighting, Clothing, Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other. Bounding boxes are normalized 0 to 1 and must be present for every item. Return at most 20 items.`;
-
-const detectionResponseSchema = {
-    type: 'OBJECT',
-    properties: {
-        items: {
-            type: 'ARRAY',
-            items: {
-                type: 'OBJECT',
-                properties: {
-                    name: { type: 'STRING' },
-                    category: { type: 'STRING' },
-                    description: { type: 'STRING' },
-                    suggestedTags: { type: 'ARRAY', items: { type: 'STRING' } },
-                    confidence: { type: 'NUMBER' },
-                    estimatedValue: { type: 'NUMBER' },
-                    bbox: {
-                        type: 'OBJECT',
-                        properties: {
-                            x: { type: 'NUMBER' },
-                            y: { type: 'NUMBER' },
-                            w: { type: 'NUMBER' },
-                            h: { type: 'NUMBER' },
-                        },
-                        required: ['x', 'y', 'w', 'h'],
-                    },
-                },
-                required: ['name', 'category', 'description', 'suggestedTags', 'confidence', 'estimatedValue', 'bbox'],
-            },
-        },
-    },
-    required: ['items'],
-};
 
 const jsonResponse = (body: unknown, status: number) =>
     new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
@@ -67,19 +36,19 @@ export default async (request: Request): Promise<Response> => {
             method: 'POST',
             headers: { 'Content-Type': 'application/json', 'x-goog-api-key': apiKey },
             body: JSON.stringify({
-                systemInstruction: { parts: [{ text: systemPrompt }] },
+                systemInstruction: { parts: [{ text: DETECTION_SYSTEM_PROMPT }] },
                 contents: [
                     {
                         role: 'user',
                         parts: [
                             { inlineData: { mimeType: body.mimeType, data: body.data } },
-                            { text: 'Identify all inventory objects in this image.' },
+                            { text: DETECTION_USER_INSTRUCTION },
                         ],
                     },
                 ],
                 generationConfig: {
                     responseMimeType: 'application/json',
-                    responseSchema: detectionResponseSchema,
+                    responseJsonSchema: DETECTION_JSON_SCHEMA,
                     temperature: 0.1,
                 },
             }),
