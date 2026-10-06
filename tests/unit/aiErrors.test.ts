@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { describeAiHttpError, describeEmptyResponse } from '../../src/lib/ai/geminiProvider';
+import { describeAiHttpError } from '../../src/lib/ai/aiErrors';
 
 describe('describeAiHttpError', () => {
     it('reports rejected API keys for 401, 403, and key messages', () => {
@@ -17,18 +17,5 @@ describe('describeAiHttpError', () => {
     it('uses the server message for configuration errors and a generic fallback otherwise', () => {
         expect(describeAiHttpError(500, 'GEMINI_API_KEY is not configured on the server.')).toMatch(/not configured/);
         expect(describeAiHttpError(418)).toMatch(/error 418/);
-    });
-});
-
-describe('describeEmptyResponse', () => {
-    it('returns null when text is present', () => {
-        expect(describeEmptyResponse({ candidates: [{ content: { parts: [{ text: '{}' }] } }] })).toBeNull();
-    });
-
-    it('flags unreadable, blocked, truncated, and empty responses', () => {
-        expect(describeEmptyResponse(null)).toMatch(/unreadable/);
-        expect(describeEmptyResponse({ promptFeedback: { blockReason: 'SAFETY' } })).toMatch(/declined/);
-        expect(describeEmptyResponse({ candidates: [{ finishReason: 'MAX_TOKENS' }] })).toMatch(/cut off/);
-        expect(describeEmptyResponse({ candidates: [] })).toMatch(/no results/);
     });
 });

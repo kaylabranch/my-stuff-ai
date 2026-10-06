@@ -1,9 +1,9 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+﻿import { useEffect, useMemo, useRef, useState } from 'react';
 import { type InventoryFilters, type InventoryItem } from '../types/inventory';
 import { filterAndSortInventory } from '../lib/filtering/inventoryFilters';
 import { useInventory } from '../hooks/useInventory';
 import '../styles/globals.css';
-import { analyzeImageWithGemini } from '../lib/ai/geminiProvider';
+import { analyzeImage } from '../lib/ai/analyzeImage';
 import { cropImageToBlob } from '../lib/images/cropImage';
 import { itemsRepository } from '../lib/db/database';
 import { DetectionReviewModal, type ReviewItem } from '../components/detection/DetectionReviewModal';
@@ -14,7 +14,7 @@ import { WorkspaceIntro } from '../components/layout/WorkspaceIntro';
 import { AnalysisProgress } from '../components/feedback/AnalysisProgress';
 import { ConfirmModal } from '../components/feedback/ConfirmModal';
 import { ItemEditModal } from '../components/inventory/ItemEditModal';
-import type { AnalysisProgress as AnalysisProgressUpdate } from '../lib/ai/geminiProvider';
+import type { AnalysisProgress as AnalysisProgressUpdate } from '../lib/ai/analyzeImage';
 import { ExportPdfModal } from '../components/export/ExportPdfModal';
 
 const initialFilters: InventoryFilters = { query: '', category: '', room: '', tags: [], sort: 'az' };
@@ -90,7 +90,7 @@ export function App() {
                     if (!file) return;
                     setAnalysisStatus(null);
                     setAnalysisProgress({ phase: 'reading', progress: 0 });
-                    void analyzeImageWithGemini(file, (update) => {
+                    void analyzeImage(file, (update) => {
                         setAnalysisProgress((current) =>
                             update.phase === 'reading'
                                 ? { phase: 'reading', progress: Math.min(30, 5 + update.progress * 0.25) }
@@ -129,8 +129,8 @@ export function App() {
                             : analysisProgress.phase === 'parsing'
                               ? 'Parsing detected objects...'
                               : analysisProgress.progress >= 80
-                                ? 'Gemini is finishing analysis...'
-                                : 'Gemini is analyzing the image...'
+                                ? 'AI is finishing analysis...'
+                                : 'AI is analyzing the image...'
                     }
                     progress={analysisProgress.progress}
                 />

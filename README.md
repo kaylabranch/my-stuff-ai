@@ -21,9 +21,16 @@ npm test
 npm run build
 ```
 
-Gemini returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal. At most 20 items are detected per photo (`MAX_DETECTED_ITEMS` in `src/lib/ai/detectionPrompt.ts`); any extras in a response are dropped.
+## AI analysis
 
-The browser never sees the API key: it posts the image to a Netlify Function (`netlify/functions/analyze.mts`), which calls Gemini. Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`) in Netlify's environment variables, without a `VITE_` prefix. For local use, create `.env.local` containing `GEMINI_API_KEY=...` (optionally `GEMINI_MODEL=...`) and run `npm run dev`; a Vite dev middleware serves the function and reads the key from that file (restart after editing it). Google AI Studio's free tier is rate-limited, and you should review Google's data-use settings before sending private home photos.
+The AI returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal. At most 20 items are detected per photo (`MAX_DETECTED_ITEMS` in `src/lib/ai/detectionPrompt.ts`); any extras in a response are dropped.
+
+The browser never sees the API key. It posts the image to a Netlify Function (`netlify/functions/analyze.mts`), which calls the AI provider (currently Google Gemini), validates the result, and returns the detected items.
+
+- **Netlify:** set `GEMINI_API_KEY` in the site's environment variables, without a `VITE_` prefix. `GEMINI_MODEL` is optional and defaults to `gemini-3.5-flash-lite`.
+- **Local:** create `.env.local` containing `GEMINI_API_KEY=...` (optionally `GEMINI_MODEL=...`) and run `npm run dev`. A Vite dev middleware serves the function and reads the key from that file; restart after editing it.
+
+Google AI Studio's free tier is rate-limited, and you should review Google's data-use settings before sending private home photos.
 
 Each upload is processed independently. Saving the same photo more than once currently creates duplicate inventory records; duplicate detection is not implemented.
 
@@ -32,7 +39,8 @@ Each upload is processed independently. Saving the same photo more than once cur
 - `src/types`: stable inventory and detection contracts
 - `src/components`: layout, inventory controls, feedback, and detection review UI
 - `src/lib/db`: IndexedDB persistence boundary
-- `src/lib/ai`: Gemini provider and response validation
+- `src/lib/ai`: provider-neutral detection contract (prompt, JSON schema, `VisionProvider` interface, response validation, error messages) and the browser client `analyzeImage`
+- `netlify/functions`: `analyze.mts` selects a provider and returns validated items; `providers/gemini.ts` holds everything Gemini-specific (add a new file here to support another provider)
 - `src/lib/images`: bounding-box crop utilities
 - `src/lib/filtering`: pure search, filter, and sort logic
 - `src/hooks`: stateful application services
@@ -43,7 +51,7 @@ Each upload is processed independently. Saving the same photo more than once cur
 
 Features include:
 
-- Gemini image analysis, detection, and cropping
+- AI image analysis, detection, and cropping
 - Item detection review
 - Optional room labeling per upload (auto-suggested from existing rooms, added as a tag on every item in that room)
 - Editable names/categories/rooms/tags/descriptions/estimated values

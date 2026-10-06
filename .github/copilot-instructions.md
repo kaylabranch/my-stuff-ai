@@ -22,7 +22,11 @@ evolve, but the requirements below should still hold.
 - **Storage:** browser IndexedDB (local-first, per-device persistence, no
   user accounts, no server-side storage of items or photos).
 - **AI vision:** Google Gemini API via Google AI Studio (image input) for object
-  identification/categorization/description.
+  identification/categorization/description, called only from a Netlify Function
+  (`netlify/functions/analyze.mts`) so the API key (`GEMINI_API_KEY`, no `VITE_`
+  prefix) never reaches the browser. Provider-specific code lives in
+  `netlify/functions/providers/`; the prompt, JSON schema, `VisionProvider`
+  interface, and validation are provider-neutral in `src/lib/ai/`.
 - **PDF export:** client-side PDF generation (e.g. jsPDF).
 - **Testing:** Vitest + React Testing Library for unit/component tests.
 - **Fonts:** Playfair Display (headings) + DM Sans (body) via Google Fonts.
