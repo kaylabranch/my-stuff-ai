@@ -24,7 +24,7 @@ export function describeAiHttpError(status: number, serverMessage?: string): str
         case 400:
             return serverMessage || 'The image could not be processed. Try a different photo.';
         case 404:
-            return 'The AI service was not found. Locally, run `netlify dev`; otherwise check the configured model name.';
+            return 'The AI service was not found. Check the deployment includes the analyze function and the configured model name.';
         case 413:
             return 'That photo is too large to analyze. Try a smaller or lower-resolution image.';
         case 429:
@@ -81,7 +81,7 @@ export async function analyzeImageWithGemini(
     }).catch(() => {
         throw new Error(
             navigator.onLine
-                ? 'Could not reach the analysis service. Locally, run `netlify dev`; otherwise try again shortly.'
+                ? 'Could not reach the analysis service. Please try again shortly.'
                 : 'You appear to be offline. AI analysis needs a network connection.',
         );
     });

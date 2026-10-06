@@ -11,7 +11,7 @@ describe('describeAiHttpError', () => {
         expect(describeAiHttpError(429)).toMatch(/rate-limited/);
         expect(describeAiHttpError(413)).toMatch(/too large/);
         expect(describeAiHttpError(503)).toMatch(/busy or unreachable/);
-        expect(describeAiHttpError(404)).toMatch(/netlify dev/);
+        expect(describeAiHttpError(404)).toMatch(/not found/);
     });
 
     it('uses the server message for configuration errors and a generic fallback otherwise', () => {

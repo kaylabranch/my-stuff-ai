@@ -23,7 +23,7 @@ npm run build
 
 Gemini returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal.
 
-The browser never sees the API key: it posts the image to a Netlify Function (`netlify/functions/analyze.mts`), which calls Gemini. Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`) in Netlify's environment variables, without a `VITE_` prefix. For local use, copy `.env.example` to `.env`, then run `npx netlify dev` instead of `npm run dev`. Google AI Studio's free tier is rate-limited, and you should review Google's data-use settings before sending private home photos.
+The browser never sees the API key: it posts the image to a Netlify Function (`netlify/functions/analyze.mts`), which calls Gemini. Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`) in Netlify's environment variables, without a `VITE_` prefix. For local use, create `.env.local` containing `GEMINI_API_KEY=...` (optionally `GEMINI_MODEL=...`) and run `npm run dev`; a Vite dev middleware serves the function and reads the key from that file (restart after editing it). Google AI Studio's free tier is rate-limited, and you should review Google's data-use settings before sending private home photos.
 
 Each upload is processed independently. Saving the same photo more than once currently creates duplicate inventory records; duplicate detection is not implemented.
 
