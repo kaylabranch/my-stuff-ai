@@ -1,6 +1,6 @@
 # My Stuff AI
 
-A local-first home inventory application. Users upload room photos, review AI-detected objects, edit their details and estimated values, save cropped inventory images in IndexedDB, and browse the resulting collection.
+A home inventory application built in React. Users upload room photos, review AI-detected objects, edit their details and estimated values, save cropped inventory images in IndexedDB, and browse the resulting collection.
 
 [Test it out live!](https://my-stuff-ai.netlify.app/) - hosted on Netlify
 
