@@ -16,6 +16,13 @@ describe('parseDetectionResponse', () => {
         expect(parseDetectionResponse({ items: [validItem] })).toEqual([validItem]);
     });
 
+    it('leaves the estimated value blank (0) when the model omits it or returns an unusable value', () => {
+        const { estimatedValue: _omitted, ...withoutValue } = validItem;
+        for (const item of [withoutValue, { ...withoutValue, estimatedValue: null }, { ...withoutValue, estimatedValue: -5 }]) {
+            expect(parseDetectionResponse({ items: [item] })[0].estimatedValue).toBe(0);
+        }
+    });
+
     it('keeps only the first 20 items instead of rejecting longer responses', () => {
         const items = Array.from({ length: 25 }, (_, index) => ({ ...validItem, name: `Item ${index}` }));
         const parsed = parseDetectionResponse({ items });

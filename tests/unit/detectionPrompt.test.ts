@@ -22,19 +22,22 @@ describe('detection prompt and schema', () => {
         );
     });
 
-    it('requires every detection field, including bbox coordinates', () => {
+    it('asks for conservative used resale values and to omit the value when unknown', () => {
+        expect(DETECTION_SYSTEM_PROMPT).toMatch(/used resale price/);
+        expect(DETECTION_SYSTEM_PROMPT).toMatch(/not the price when new/);
+        expect(DETECTION_SYSTEM_PROMPT).toMatch(/conservatively/);
+        expect(DETECTION_SYSTEM_PROMPT).toMatch(/whole set/);
+        expect(DETECTION_SYSTEM_PROMPT).toMatch(/Omit estimatedValue entirely/);
+        expect(DETECTION_SYSTEM_PROMPT).not.toMatch(/Use 0 when/);
+    });
+
+    it('requires every detection field except the optional estimated value', () => {
         const item = DETECTION_JSON_SCHEMA.properties.items.items;
         expect(item.required).toEqual(
-            expect.arrayContaining([
-                'name',
-                'category',
-                'description',
-                'suggestedTags',
-                'confidence',
-                'estimatedValue',
-                'bbox',
-            ]),
+            expect.arrayContaining(['name', 'category', 'description', 'suggestedTags', 'confidence', 'bbox']),
         );
+        expect(item.required).not.toContain('estimatedValue');
+        expect(item.properties).toHaveProperty('estimatedValue');
         expect(item.properties.bbox.required).toEqual(['x', 'y', 'w', 'h']);
     });
 });
