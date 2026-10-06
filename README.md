@@ -21,9 +21,9 @@ npm test
 npm run build
 ```
 
-Copy `.env.example` to `.env.local` and add a Google AI Studio Gemini API key when configuring AI detection. Gemini returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal.
+Gemini returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal.
 
-Gemini is called directly from the browser for this local prototype. Do not use this direct-key mode for a public deployment without adding a server-side proxy. Google AI Studio's free tier is rate-limited, and you should review Google's data-use settings before sending private home photos.
+The browser never sees the API key: it posts the image to a Netlify Function (`netlify/functions/analyze.mts`), which calls Gemini. Set `GEMINI_API_KEY` (and optionally `GEMINI_MODEL`) in Netlify's environment variables, without a `VITE_` prefix. For local use, copy `.env.example` to `.env`, then run `npx netlify dev` instead of `npm run dev`. Google AI Studio's free tier is rate-limited, and you should review Google's data-use settings before sending private home photos.
 
 Each upload is processed independently. Saving the same photo more than once currently creates duplicate inventory records; duplicate detection is not implemented.
 
