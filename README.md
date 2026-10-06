@@ -48,7 +48,7 @@ After detection, every item is cropped once from its bounding box (with padding)
 - `src/hooks`: stateful application services
 - `src/app`: composition and application UI
 - `tests`: Vitest + React Testing Library unit and component tests, covering the AI contract, Gemini adapter, Netlify function, browser client, cropping, review modal, save flow, filtering, IndexedDB, and PDF export
-- `public`: static assets (favicon)
+- `public`: static assets (favicon)\n- `vite-plugins`: dev-only middleware that serves `netlify/functions` during `npm run dev`
 
 ## App Details
 
