@@ -103,7 +103,9 @@ Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other
 
 - Show the uploaded photo alongside a list of detected items.
 - Generate a cropped thumbnail Blob from the source image using each
-  item's `bbox` (with small padding), rendered client-side.
+  item's `bbox` (with small padding), rendered client-side. Crop once after
+  detection, preserve the crop's aspect ratio, and reuse the same blobs for
+  the review UI and for saving (no re-cropping on save or on edits).
 - Every detected item must be editable before saving: name, category
   (dropdown), tags, description/note, estimated value.
 - Each item can be individually removed/excluded from the save (and

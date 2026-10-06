@@ -34,6 +34,8 @@ Google AI Studio's free tier is rate-limited, and you should review Google's dat
 
 Each upload is processed independently. Saving the same photo more than once currently creates duplicate inventory records; duplicate detection is not implemented.
 
+After detection, every item is cropped once from its bounding box (with padding) into a JPEG thumbnail that preserves the crop's aspect ratio and fits within 320px. The review modal shows those thumbnails and saving reuses them, falling back to the original photo if a crop failed.
+
 ## Architecture
 
 - `src/types`: stable inventory and detection contracts
@@ -41,11 +43,12 @@ Each upload is processed independently. Saving the same photo more than once cur
 - `src/lib/db`: IndexedDB persistence boundary
 - `src/lib/ai`: provider-neutral detection contract (prompt, JSON schema, `VisionProvider` interface, response validation, error messages) and the browser client `analyzeImage`
 - `netlify/functions`: `analyze.mts` selects a provider and returns validated items; `providers/gemini.ts` holds everything Gemini-specific (add a new file here to support another provider)
-- `src/lib/images`: bounding-box crop utilities
+- `src/lib/images`: bounding-box crop utilities (aspect-preserving thumbnails, single image decode)
 - `src/lib/filtering`: pure search, filter, and sort logic
 - `src/hooks`: stateful application services
 - `src/app`: composition and application UI
-- `tests`: unit and component test suites
+- `tests`: Vitest + React Testing Library unit and component tests, covering the AI contract, Gemini adapter, Netlify function, browser client, cropping, review modal, save flow, filtering, IndexedDB, and PDF export
+- `public`: static assets (favicon)
 
 ## App Details
 
