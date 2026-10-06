@@ -4,7 +4,7 @@ import { filterAndSortInventory } from '../lib/filtering/inventoryFilters';
 import { useInventory } from '../hooks/useInventory';
 import '../styles/globals.css';
 import { analyzeImage } from '../lib/ai/analyzeImage';
-import { cropImageToBlob } from '../lib/images/cropImage';
+import { cropImagesToBlobs } from '../lib/images/cropImage';
 import { itemsRepository } from '../lib/db/database';
 import { DetectionReviewModal, type ReviewItem } from '../components/detection/DetectionReviewModal';
 import { TopBar } from '../components/layout/TopBar';
@@ -26,6 +26,7 @@ export function App() {
     const [analysisStatus, setAnalysisStatus] = useState<string | null>(null);
     const [analysisProgress, setAnalysisProgress] = useState<AnalysisProgressUpdate | null>(null);
     const [reviewItems, setReviewItems] = useState<ReviewItem[]>([]);
+    const [reviewThumbnails, setReviewThumbnails] = useState<Array<Blob | null>>([]);
     const [reviewFile, setReviewFile] = useState<File | null>(null);
     const [roomName, setRoomName] = useState('');
     const [isSaving, setIsSaving] = useState(false);
@@ -61,6 +62,7 @@ export function App() {
     const closeReview = () => {
         setReviewFile(null);
         setReviewItems([]);
+        setReviewThumbnails([]);
         setRoomName('');
         setAnalysisStatus(null);
         setAnalysisProgress(null);
@@ -98,8 +100,13 @@ export function App() {
                         );
                     })
                         .then(async (detected) => {
+                            const thumbnails = await cropImagesToBlobs(
+                                file,
+                                detected.map((item) => item.bbox),
+                            );
                             await new Promise((resolve) => window.setTimeout(resolve, 300));
                             setReviewFile(file);
+                            setReviewThumbnails(thumbnails);
                             setReviewItems(detected.map((item) => ({ ...item, removed: false })));
                             setAnalysisStatus(
                                 `${detected.length} object${detected.length === 1 ? '' : 's'} detected. Review each item before saving.`,
@@ -169,6 +176,7 @@ export function App() {
                 <DetectionReviewModal
                     file={reviewFile}
                     items={reviewItems}
+                    thumbnails={reviewThumbnails}
                     roomName={roomName}
                     rooms={rooms}
                     isSaving={isSaving}
@@ -185,16 +193,13 @@ export function App() {
                     onSave={async () => {
                         setIsSaving(true);
                         const room = roomName.trim();
-                        const eligible = reviewItems.filter((item) => !item.removed && item.name.trim());
+                        const eligible = reviewItems
+                            .map((item, index) => ({ item, thumbnail: reviewThumbnails[index] }))
+                            .filter(({ item }) => !item.removed && item.name.trim());
                         let savedCount = 0;
                         try {
-                            for (const item of eligible) {
-                                let imageBlob: Blob;
-                                try {
-                                    imageBlob = await cropImageToBlob(reviewFile, item.bbox);
-                                } catch {
-                                    imageBlob = reviewFile;
-                                }
+                            for (const { item, thumbnail } of eligible) {
+                                const imageBlob: Blob = thumbnail ?? reviewFile;
                                 const tags = [...item.suggestedTags];
                                 if (room && !tags.some((tag) => tag.toLowerCase() === room.toLowerCase()))
                                     tags.push(room);

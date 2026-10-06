@@ -14,6 +14,20 @@ export interface GeminiPayload {
     candidates?: Array<{ finishReason?: string; content?: { parts?: Array<{ text?: string }> } }>;
 }
 
+/** Converts standard JSON Schema to Gemini's schema: upper-case types, no maxItems (Gemini rejects it combined with a large enum; the prompt and parser enforce the limit). */
+export function toGeminiSchema(schema: unknown): unknown {
+    if (Array.isArray(schema)) return schema.map(toGeminiSchema);
+    if (!schema || typeof schema !== 'object') return schema;
+    return Object.fromEntries(
+        Object.entries(schema)
+            .filter(([key]) => key !== 'maxItems')
+            .map(([key, value]) => [
+                key,
+                key === 'type' && typeof value === 'string' ? value.toUpperCase() : toGeminiSchema(value),
+            ]),
+    );
+}
+
 /** Explains why a successful Gemini response carried no usable text, or returns null if text is present. */
 export function describeEmptyResponse(payload: GeminiPayload | null): string | null {
     if (!payload) return 'The AI service returned an unreadable response. Please try again.';
@@ -57,7 +71,7 @@ export function createGeminiProvider(getEnv: (name: string) => string | undefine
                         ],
                         generationConfig: {
                             responseMimeType: 'application/json',
-                            responseJsonSchema: DETECTION_JSON_SCHEMA,
+                            responseSchema: toGeminiSchema(DETECTION_JSON_SCHEMA),
                             temperature: 0.1,
                         },
                     }),
@@ -68,6 +82,7 @@ export function createGeminiProvider(getEnv: (name: string) => string | undefine
 
             const payload = (await response.json().catch(() => null)) as GeminiPayload | null;
             if (!response.ok) {
+                console.error(`Gemini request failed (${response.status}): ${payload?.error?.message ?? 'no message'}`);
                 throw new AiProviderError(describeAiHttpError(response.status, payload?.error?.message), response.status);
             }
             const emptyReason = describeEmptyResponse(payload);

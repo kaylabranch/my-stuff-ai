@@ -1,13 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Camera, Save, Trash2, Upload, X } from 'lucide-react';
 import { CATEGORIES, type DetectedItem } from '../../types/inventory';
-import { cropImageToBlob } from '../../lib/images/cropImage';
 
 export type ReviewItem = DetectedItem & { removed: boolean };
 
 interface DetectionReviewModalProps {
     file: File;
     items: ReviewItem[];
+    /** Pre-cropped thumbnail per item (same order as items); null where cropping failed. */
+    thumbnails: Array<Blob | null>;
     roomName: string;
     rooms: string[];
     isSaving: boolean;
@@ -21,6 +22,7 @@ interface DetectionReviewModalProps {
 export function DetectionReviewModal({
     file,
     items,
+    thumbnails,
     roomName,
     rooms,
     isSaving,
@@ -34,37 +36,16 @@ export function DetectionReviewModal({
     const [thumbUrls, setThumbUrls] = useState<Array<string | null>>([]);
 
     useEffect(() => {
-        const nextSourceUrl = URL.createObjectURL(file);
-        let cancelled = false;
-        const createdThumbUrls: string[] = [];
-        setSourceUrl(nextSourceUrl);
-        setThumbUrls([]);
+        const url = URL.createObjectURL(file);
+        setSourceUrl(url);
+        return () => URL.revokeObjectURL(url);
+    }, [file]);
 
-        void Promise.all(
-            items.map(async (item) => {
-                try {
-                    const blob = await cropImageToBlob(file, item.bbox);
-                    const url = URL.createObjectURL(blob);
-                    createdThumbUrls.push(url);
-                    return url;
-                } catch {
-                    return null;
-                }
-            }),
-        ).then((urls) => {
-            if (cancelled) {
-                createdThumbUrls.forEach((url) => URL.revokeObjectURL(url));
-                return;
-            }
-            setThumbUrls(urls);
-        });
-
-        return () => {
-            cancelled = true;
-            URL.revokeObjectURL(nextSourceUrl);
-            createdThumbUrls.forEach((url) => URL.revokeObjectURL(url));
-        };
-    }, [file, items]);
+    useEffect(() => {
+        const urls = thumbnails.map((blob) => (blob ? URL.createObjectURL(blob) : null));
+        setThumbUrls(urls);
+        return () => urls.forEach((url) => url && URL.revokeObjectURL(url));
+    }, [thumbnails]);
 
     const eligibleCount = items.filter((item) => !item.removed && item.name.trim()).length;
     const canSave = eligibleCount > 0;

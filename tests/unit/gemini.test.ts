@@ -1,7 +1,29 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { createGeminiProvider, describeEmptyResponse } from '../../netlify/functions/providers/gemini';
+import { createGeminiProvider, describeEmptyResponse, toGeminiSchema } from '../../netlify/functions/providers/gemini';
+import { DETECTION_JSON_SCHEMA, DETECTION_SYSTEM_PROMPT } from '../../src/lib/ai/detectionPrompt';
 
 const image = { mimeType: 'image/png', data: 'abc' };
+
+describe('toGeminiSchema', () => {
+    it('upper-cases every type name, including nested ones, and keeps other keywords', () => {
+        const converted = toGeminiSchema(DETECTION_JSON_SCHEMA) as typeof DETECTION_JSON_SCHEMA;
+        expect(converted.type).toBe('OBJECT');
+        expect(converted.properties.items.type).toBe('ARRAY');
+        expect(converted.properties.items.items.properties.bbox.properties.x.type).toBe('NUMBER');
+        expect(converted.properties.items.items.properties.category.enum).toContain('Furniture');
+        expect(converted.required).toEqual(['items']);
+    });
+
+    it('does not mutate the shared schema', () => {
+        toGeminiSchema(DETECTION_JSON_SCHEMA);
+        expect(DETECTION_JSON_SCHEMA.type).toBe('object');
+        expect(DETECTION_JSON_SCHEMA.properties.items.maxItems).toBeDefined();
+    });
+
+    it('omits maxItems, which Gemini rejects together with the category enum', () => {
+        expect(JSON.stringify(toGeminiSchema(DETECTION_JSON_SCHEMA))).not.toContain('maxItems');
+    });
+});
 
 describe('describeEmptyResponse', () => {
     it('returns null when text is present', () => {
@@ -46,6 +68,19 @@ describe('createGeminiProvider', () => {
         expect(url).toContain('test-model');
         expect(url).not.toContain('secret');
         expect((init.headers as Record<string, string>)['x-goog-api-key']).toBe('secret');
+    });
+
+    it('sends the prompt and a Gemini-format response schema without maxItems', async () => {
+        stubFetch(Response.json({ candidates: [{ content: { parts: [{ text: 'hi' }] } }] }));
+        await provider.analyze(image);
+        const [, init] = vi.mocked(fetch).mock.calls[0] as [string, RequestInit];
+        const body = JSON.parse(init.body as string);
+        expect(body.systemInstruction.parts[0].text).toBe(DETECTION_SYSTEM_PROMPT);
+        expect(body.contents[0].parts[0].inlineData).toEqual({ mimeType: 'image/png', data: 'abc' });
+        expect(body.generationConfig.responseMimeType).toBe('application/json');
+        expect(body.generationConfig.responseSchema.type).toBe('OBJECT');
+        expect(body.generationConfig.responseJsonSchema).toBeUndefined();
+        expect(JSON.stringify(body.generationConfig)).not.toContain('maxItems');
     });
 
     it('maps upstream HTTP errors and network failures to AiProviderError', async () => {

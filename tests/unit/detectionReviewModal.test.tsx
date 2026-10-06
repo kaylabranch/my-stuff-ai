@@ -1,10 +1,6 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+﻿import { fireEvent, render, screen } from '@testing-library/react';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DetectionReviewModal, type ReviewItem } from '../../src/components/detection/DetectionReviewModal';
-
-vi.mock('../../src/lib/images/cropImage', () => ({
-    cropImageToBlob: vi.fn(async () => new Blob(['thumbnail'], { type: 'image/png' })),
-}));
 
 const reviewItem: ReviewItem = {
     name: 'Reading chair',
@@ -29,6 +25,7 @@ describe('DetectionReviewModal', () => {
             <DetectionReviewModal
                 file={new File(['photo'], 'room.png', { type: 'image/png' })}
                 items={[reviewItem]}
+                thumbnails={[null]}
                 roomName=""
                 rooms={[]}
                 isSaving={false}
@@ -46,5 +43,35 @@ describe('DetectionReviewModal', () => {
 
         fireEvent.click(saveButton);
         expect(onSave).toHaveBeenCalledOnce();
+    });
+
+    it('shows the supplied thumbnail, falls back to an icon when null, and does not recreate URLs on edits', () => {
+        const props = {
+            file: new File(['photo'], 'room.png', { type: 'image/png' }),
+            roomName: '',
+            rooms: [],
+            isSaving: false,
+            onRoomNameChange: vi.fn(),
+            onChange: vi.fn(),
+            onToggleRemoved: vi.fn(),
+            onClose: vi.fn(),
+            onSave: vi.fn(),
+        };
+        const thumbnails = [new Blob(['thumb'], { type: 'image/jpeg' }), null];
+        const items = [reviewItem, { ...reviewItem, name: 'Lamp' }];
+        const { rerender } = render(<DetectionReviewModal {...props} items={items} thumbnails={thumbnails} />);
+
+        expect(screen.getByAltText('Crop of Reading chair')).toBeInTheDocument();
+        expect(screen.queryByAltText('Crop of Lamp')).not.toBeInTheDocument();
+        const urlCalls = vi.mocked(URL.createObjectURL).mock.calls.length;
+
+        rerender(
+            <DetectionReviewModal
+                {...props}
+                items={[{ ...items[0], name: 'Armchair' }, items[1]]}
+                thumbnails={thumbnails}
+            />,
+        );
+        expect(vi.mocked(URL.createObjectURL).mock.calls.length).toBe(urlCalls);
     });
 });
