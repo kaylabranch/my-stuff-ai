@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Camera, Save, Trash2, Upload, X } from 'lucide-react';
 import { CATEGORIES, type DetectedItem } from '../../types/inventory';
+import { parseValueInput } from '../../lib/inventory/itemValue';
 
 export type ReviewItem = DetectedItem & { removed: boolean };
 
@@ -160,11 +161,11 @@ export function DetectionReviewModal({
                                             type="number"
                                             min="0"
                                             step="0.01"
-                                            value={item.estimatedValue || ''}
+                                            value={item.estimatedValue ?? ''}
                                             placeholder="0.00"
                                             onChange={(event) =>
                                                 onChange(index, {
-                                                    estimatedValue: Math.max(0, Number(event.target.value) || 0),
+                                                    estimatedValue: parseValueInput(event.target.value),
                                                 })
                                             }
                                         />

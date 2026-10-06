@@ -1,5 +1,6 @@
 import { jsPDF } from 'jspdf';
 import type { InventoryItem } from '../../types/inventory';
+import { formatValue, sumValues } from '../inventory/itemValue';
 
 export interface PdfOptions {
     title: string;
@@ -57,7 +58,7 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
     rule();
     y += 10;
 
-    const totalValue = items.reduce((sum, item) => sum + item.estimatedValue, 0);
+    const totalValue = sumValues(items);
     const categoryCount = new Set(items.map((item) => item.category)).size;
     const roomCount = new Set(items.map((item) => item.room).filter(Boolean)).size;
     const tagCount = new Set(items.flatMap((item) => item.tags)).size;
@@ -66,7 +67,7 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
         ['Categories', String(categoryCount)],
         ['Rooms', String(roomCount)],
         ['Tags', String(tagCount)],
-        ...(options.includeValues ? [['Estimated value', `$${totalValue.toLocaleString()}`]] : []),
+        ...(options.includeValues ? [['Estimated value', formatValue(totalValue) ?? '—']] : []),
     ];
     const statWidth = contentWidth / statValues.length;
     statValues.forEach(([label, value], index) => {
@@ -94,13 +95,13 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
         [...new Set(items.map((item) => item.category))].sort().forEach((category) => {
             ensureSpace(8);
             const categoryItems = items.filter((item) => item.category === category);
-            const categoryValue = categoryItems.reduce((sum, item) => sum + item.estimatedValue, 0);
+            const categoryValue = sumValues(categoryItems);
             font('normal', 8.5);
             document.text(category, margin, y);
             document.text(String(categoryItems.length), margin + 92, y);
             if (options.includeValues) {
                 font('normal', 8.5, accent);
-                document.text(`$${categoryValue.toLocaleString()}`, margin + 126, y);
+                document.text(formatValue(categoryValue) ?? '—', margin + 126, y);
             }
             y += 6;
         });
@@ -160,9 +161,9 @@ export async function buildInventoryPdf(items: InventoryItem[], options: PdfOpti
                 y + (item.description ? 22 : 14),
             );
         }
-        if (options.includeValues) {
+        if (options.includeValues && formatValue(item.estimatedValue)) {
             font('bold', 9, accent);
-            document.text(`$${item.estimatedValue.toLocaleString()}`, pageWidth - margin, y + 3, { align: 'right' });
+            document.text(formatValue(item.estimatedValue) as string, pageWidth - margin, y + 3, { align: 'right' });
         }
         y += rowHeight + 3;
     }

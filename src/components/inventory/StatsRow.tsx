@@ -1,9 +1,11 @@
+import { formatValue } from '../../lib/inventory/itemValue';
+
 interface StatsRowProps {
     itemCount: number;
     categoryCount: number;
     roomCount: number;
     tagCount: number;
-    estimatedValue: number;
+    estimatedValue: number | null;
 }
 
 export function StatsRow({ itemCount, categoryCount, roomCount, tagCount, estimatedValue }: StatsRowProps) {
@@ -26,7 +28,7 @@ export function StatsRow({ itemCount, categoryCount, roomCount, tagCount, estima
                 <span>Tags used</span>
             </div>
             <div className="accent-stat">
-                <strong>${estimatedValue.toLocaleString()}</strong>
+                <strong>{formatValue(estimatedValue) ?? '—'}</strong>
                 <span>Estimated value</span>
             </div>
         </section>

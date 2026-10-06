@@ -37,16 +37,16 @@ evolve, but the requirements below should still hold.
 
 ### Item record
 
-| Field            | Type               | Notes                                                                                                                                 |
-| ---------------- | ------------------ | ------------------------------------------------------------------------------------------------------------------------------------- |
-| `id`             | string             | Unique, e.g. `item_<timestamp>_<random>`                                                                                              |
-| `name`           | string             | Editable, required                                                                                                                    |
-| `category`       | string             | One of the fixed category list (below)                                                                                                |
-| `description`    | string             | Optional, 1-sentence AI-generated or user-edited                                                                                      |
-| `tags`           | string[]           | Free-form, comma-separated in UI                                                                                                      |
-| `imageBlob`      | Blob               | Cropped thumbnail image, stored natively in IndexedDB (not a base64 data URL — avoids ~33% size overhead and keeps React state light) |
-| `estimatedValue` | number             | Optional, defaults to 0                                                                                                               |
-| `createdAt`      | number (timestamp) | Set on save, used for sorting                                                                                                         |
+| Field            | Type               | Notes                                                                                                                                                                             |
+| ---------------- | ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `id`             | string             | Unique, e.g. `item_<timestamp>_<random>`                                                                                                                                          |
+| `name`           | string             | Editable, required                                                                                                                                                                |
+| `category`       | string             | One of the fixed category list (below)                                                                                                                                            |
+| `description`    | string             | Optional, 1-sentence AI-generated or user-edited                                                                                                                                  |
+| `tags`           | string[]           | Free-form, comma-separated in UI                                                                                                                                                  |
+| `imageBlob`      | Blob               | Cropped thumbnail image, stored natively in IndexedDB (not a base64 data URL — avoids ~33% size overhead and keeps React state light)                                             |
+| `estimatedValue` | number \| null     | Optional; null = unknown (shown blank, never as $0). Legacy 0 is treated as unknown. AI omits it when it cannot judge; the AI estimate is a conservative used-resale price in USD |
+| `createdAt`      | number (timestamp) | Set on save, used for sorting                                                                                                                                                     |
 
 - Display images via `URL.createObjectURL(item.imageBlob)`; revoke object
   URLs on unmount/list changes to avoid memory leaks.

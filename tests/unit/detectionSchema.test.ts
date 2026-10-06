@@ -16,11 +16,19 @@ describe('parseDetectionResponse', () => {
         expect(parseDetectionResponse({ items: [validItem] })).toEqual([validItem]);
     });
 
-    it('leaves the estimated value blank (0) when the model omits it or returns an unusable value', () => {
+    it('leaves the estimated value null when the model omits it or returns an unusable value', () => {
         const { estimatedValue: _omitted, ...withoutValue } = validItem;
-        for (const item of [withoutValue, { ...withoutValue, estimatedValue: null }, { ...withoutValue, estimatedValue: -5 }]) {
-            expect(parseDetectionResponse({ items: [item] })[0].estimatedValue).toBe(0);
+        for (const estimatedValue of [undefined, null, 0, -5, 'a lot', Number.NaN]) {
+            const parsed = parseDetectionResponse({ items: [{ ...withoutValue, estimatedValue }] });
+            expect(parsed[0].estimatedValue).toBeNull();
         }
+        expect(parseDetectionResponse({ items: [withoutValue] })[0].estimatedValue).toBeNull();
+    });
+
+    it('keeps positive estimated values, including from aliased fields', () => {
+        expect(parseDetectionResponse({ items: [{ ...validItem, estimatedValue: 35.5 }] })[0].estimatedValue).toBe(35.5);
+        const { estimatedValue: _omitted, ...withoutValue } = validItem;
+        expect(parseDetectionResponse({ items: [{ ...withoutValue, estimated_value: 25 }] })[0].estimatedValue).toBe(25);
     });
 
     it('keeps only the first 20 items instead of rejecting longer responses', () => {
@@ -57,7 +65,7 @@ describe('parseDetectionResponse', () => {
                 suggestedTags: ['brass', 'table'],
                 confidence: 0.92,
                 bbox: { x: 0.1, y: 0.2, w: 0.30000000000000004, h: 0.6000000000000001 },
-                estimatedValue: 0,
+                estimatedValue: null,
             },
         ]);
     });

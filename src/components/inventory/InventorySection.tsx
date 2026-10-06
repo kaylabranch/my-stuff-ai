@@ -1,5 +1,6 @@
 import { Camera, Pencil, Trash2 } from 'lucide-react';
 import type { InventoryFilters, InventoryItem } from '../../types/inventory';
+import { formatValue } from '../../lib/inventory/itemValue';
 import { InventoryToolbar } from './InventoryToolbar';
 import { InventoryImage } from './InventoryImage';
 
@@ -97,7 +98,9 @@ export function InventorySection({
                                     <p className="item-category">
                                         {item.room ? `${item.room} | ${item.category}` : item.category}
                                     </p>
-                                    <span className="item-value">${item.estimatedValue.toLocaleString()}</span>
+                                    {formatValue(item.estimatedValue) && (
+                                        <span className="item-value">{formatValue(item.estimatedValue)}</span>
+                                    )}
                                 </div>
                                 <h2>{item.name}</h2>
                                 <p>{item.description}</p>

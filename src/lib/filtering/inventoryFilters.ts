@@ -1,4 +1,5 @@
 import type { InventoryFilters, InventoryItem } from '../../types/inventory';
+import { compareValues } from '../inventory/itemValue';
 
 export function filterAndSortInventory(items: InventoryItem[], filters: InventoryFilters): InventoryItem[] {
     const query = filters.query.trim().toLowerCase();
@@ -18,9 +19,9 @@ export function filterAndSortInventory(items: InventoryItem[], filters: Inventor
             case 'category':
                 return first.category.localeCompare(second.category);
             case 'value-hi':
-                return second.estimatedValue - first.estimatedValue;
+                return compareValues(first.estimatedValue, second.estimatedValue, 'desc');
             case 'value-lo':
-                return first.estimatedValue - second.estimatedValue;
+                return compareValues(first.estimatedValue, second.estimatedValue, 'asc');
             case 'az':
             default:
                 return first.name.localeCompare(second.name);

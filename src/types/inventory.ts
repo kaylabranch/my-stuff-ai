@@ -26,7 +26,8 @@ export interface InventoryItem {
     tags: string[];
     room: string;
     imageBlob?: Blob;
-    estimatedValue: number;
+    /** Null when unknown. */
+    estimatedValue: number | null;
     createdAt: number;
 }
 
@@ -52,5 +53,6 @@ export interface DetectedItem {
     suggestedTags: string[];
     confidence: number;
     bbox: BoundingBox;
-    estimatedValue: number;
+    /** Null when the model could not judge a value. */
+    estimatedValue: number | null;
 }

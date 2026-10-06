@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { CATEGORIES, type DetectedItem } from '../../types/inventory';
 import { MAX_DETECTED_ITEMS } from './detectionPrompt';
+import { hasValue } from '../inventory/itemValue';
 
 const boundingBoxSchema = z.object({
     x: z.number().min(0).max(1),
@@ -16,7 +17,7 @@ const detectedItemSchema = z.object({
     suggestedTags: z.array(z.string()),
     confidence: z.number().min(0).max(1),
     bbox: boundingBoxSchema,
-    estimatedValue: z.number().min(0),
+    estimatedValue: z.number().positive().nullable(),
 });
 
 export const detectionResponseSchema = z.object({
@@ -92,7 +93,8 @@ function normalizeItem(value: unknown) {
         : categoryAliases[rawCategory.toLowerCase()] || 'Other';
     const rawConfidence = asNumber(item.confidence ?? item.score, 0.5);
     const confidence = rawConfidence > 1 && rawConfidence <= 100 ? rawConfidence / 100 : rawConfidence;
-    const estimatedValue = Math.max(0, asNumber(item.estimatedValue ?? item.estimated_value ?? item.value, 0));
+    const rawValue = item.estimatedValue ?? item.estimated_value ?? item.value;
+    const estimatedValue = hasValue(rawValue as number | null | undefined) ? (rawValue as number) : null;
     const rawBox = item.bbox ?? item.boundingBox ?? item.box_2d ?? item.box2d ?? item.box;
     const box = normalizeBoundingBox(rawBox);
     if (!box)

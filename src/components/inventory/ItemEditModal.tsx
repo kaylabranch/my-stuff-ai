@@ -1,6 +1,7 @@
 import type { FormEvent } from 'react';
 import { Save, X } from 'lucide-react';
 import { CATEGORIES, type InventoryItem } from '../../types/inventory';
+import { hasValue, parseValueInput } from '../../lib/inventory/itemValue';
 
 interface ItemEditModalProps {
     item: InventoryItem;
@@ -25,7 +26,7 @@ export function ItemEditModal({ item, rooms, isSaving, onSave, onClose }: ItemEd
                 .map((tag) => tag.trim())
                 .filter(Boolean),
             room: String(form.get('room') || '').trim(),
-            estimatedValue: Math.max(0, Number(form.get('estimatedValue')) || 0),
+            estimatedValue: parseValueInput(form.get('estimatedValue')),
         });
     };
 
@@ -97,7 +98,7 @@ export function ItemEditModal({ item, rooms, isSaving, onSave, onClose }: ItemEd
                             type="number"
                             min="0"
                             step="0.01"
-                            defaultValue={item.estimatedValue || ''}
+                            defaultValue={hasValue(item.estimatedValue) ? item.estimatedValue : ''}
                         />
                     </label>
                     <div className="edit-actions">

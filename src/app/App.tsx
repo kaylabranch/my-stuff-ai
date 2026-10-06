@@ -4,6 +4,7 @@ import { filterAndSortInventory } from '../lib/filtering/inventoryFilters';
 import { useInventory } from '../hooks/useInventory';
 import '../styles/globals.css';
 import { analyzeImage } from '../lib/ai/analyzeImage';
+import { sumValues } from '../lib/inventory/itemValue';
 import { cropImagesToBlobs } from '../lib/images/cropImage';
 import { itemsRepository } from '../lib/db/database';
 import { DetectionReviewModal, type ReviewItem } from '../components/detection/DetectionReviewModal';
@@ -153,7 +154,7 @@ export function App() {
                 categoryCount={categories.length}
                 roomCount={rooms.length}
                 tagCount={tags.length}
-                estimatedValue={items.reduce((total, item) => total + item.estimatedValue, 0)}
+                estimatedValue={sumValues(items)}
             />
 
             <InventorySection

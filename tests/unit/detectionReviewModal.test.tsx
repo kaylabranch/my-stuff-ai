@@ -45,6 +45,33 @@ describe('DetectionReviewModal', () => {
         expect(onSave).toHaveBeenCalledOnce();
     });
 
+    it('keeps an unknown value blank and reports typed values, clearing back to null', () => {
+        const onChange = vi.fn();
+        render(
+            <DetectionReviewModal
+                file={new File(['photo'], 'room.png', { type: 'image/png' })}
+                items={[{ ...reviewItem, estimatedValue: null }]}
+                thumbnails={[null]}
+                roomName=""
+                rooms={[]}
+                isSaving={false}
+                onRoomNameChange={vi.fn()}
+                onChange={onChange}
+                onToggleRemoved={vi.fn()}
+                onClose={vi.fn()}
+                onSave={vi.fn()}
+            />,
+        );
+
+        const valueInput = screen.getByLabelText('Object 1 estimated value');
+        expect(valueInput).toHaveValue(null);
+
+        fireEvent.change(valueInput, { target: { value: '25.5' } });
+        expect(onChange).toHaveBeenLastCalledWith(0, { estimatedValue: 25.5 });
+        fireEvent.change(valueInput, { target: { value: '0' } });
+        expect(onChange).toHaveBeenLastCalledWith(0, { estimatedValue: null });
+    });
+
     it('shows the supplied thumbnail, falls back to an icon when null, and does not recreate URLs on edits', () => {
         const props = {
             file: new File(['photo'], 'room.png', { type: 'image/png' }),

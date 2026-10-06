@@ -46,6 +46,21 @@ describe('filterAndSortInventory', () => {
         ).toEqual(['1', '2']);
     });
 
+    it('puts items without a value last for both value sort directions', () => {
+        const withUnknown: InventoryItem[] = [
+            { ...items[0], id: 'none', name: 'No value', estimatedValue: null },
+            { ...items[0], id: 'legacy', name: 'Legacy zero', estimatedValue: 0 },
+            items[0],
+            items[1],
+        ];
+        const idsFor = (sort: 'value-hi' | 'value-lo') =>
+            filterAndSortInventory(withUnknown, { query: '', category: '', room: '', tags: [], sort }).map(
+                (item) => item.id,
+            );
+        expect(idsFor('value-hi')).toEqual(['1', '2', 'none', 'legacy']);
+        expect(idsFor('value-lo')).toEqual(['2', '1', 'none', 'legacy']);
+    });
+
     it('filters by room', () => {
         expect(
             filterAndSortInventory(items, { query: '', category: '', room: 'Office', tags: [], sort: 'az' }),

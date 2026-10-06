@@ -28,6 +28,34 @@ describe('buildInventoryPdf', () => {
         expect(pdf.size).toBeGreaterThan(100);
     });
 
+    it.each([true, false])('handles items and categories with no value (values %s)', async (includeValues) => {
+        const unvalued: InventoryItem[] = [
+            { ...items[0], id: 'a', estimatedValue: null },
+            { ...items[0], id: 'b', category: 'Lighting', estimatedValue: 25 },
+            { ...items[0], id: 'c', category: 'Tools', estimatedValue: null },
+        ];
+        const pdf = await buildInventoryPdf(unvalued, {
+            title: 'Test inventory',
+            includeSummary: true,
+            includeImages: false,
+            includeValues,
+            includeTags: false,
+        });
+        expect(pdf.type).toBe('application/pdf');
+        expect(pdf.size).toBeGreaterThan(100);
+    });
+
+    it('handles an inventory where no item has a value', async () => {
+        const pdf = await buildInventoryPdf([{ ...items[0], estimatedValue: null }], {
+            title: 'Test inventory',
+            includeSummary: true,
+            includeImages: false,
+            includeValues: true,
+            includeTags: true,
+        });
+        expect(pdf.type).toBe('application/pdf');
+    });
+
     it('handles items with no room without crashing', async () => {
         const itemsWithoutRoom: InventoryItem[] = [{ ...items[0], room: '' }];
         const pdf = await buildInventoryPdf(itemsWithoutRoom, {

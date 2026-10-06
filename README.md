@@ -25,6 +25,8 @@ npm run build
 
 The AI returns object metadata, confidence, estimated value, and normalized bounding boxes. The app validates and normalizes common response variations before opening the review modal. At most 20 items are detected per photo (`MAX_DETECTED_ITEMS` in `src/lib/ai/detectionPrompt.ts`); any extras in a response are dropped.
 
+Estimated values are the AI's conservative guess at the typical used resale price in USD. When the AI can't judge an item it leaves the value out, and the item's value stays blank (`null`) for you to fill in or not. Blank values are never shown as `$0`: they are hidden on item cards and in the PDF, skipped in totals (a dash is shown if nothing has a value), and sort last when sorting by value. Values saved by earlier versions as `0` are treated as blank. Helpers live in `src/lib/inventory/itemValue.ts`.
+
 The browser never sees the API key. It posts the image to a Netlify Function (`netlify/functions/analyze.mts`), which calls the AI provider (currently Google Gemini), validates the result, and returns the detected items.
 
 - **Netlify:** set `GEMINI_API_KEY` in the site's environment variables, without a `VITE_` prefix. `GEMINI_MODEL` is optional and defaults to `gemini-3.5-flash-lite`.
