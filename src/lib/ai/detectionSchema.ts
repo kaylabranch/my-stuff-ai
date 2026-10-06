@@ -140,7 +140,7 @@ export function parseDetectionResponse(value: unknown): DetectedItem[] {
     if (!result.success) {
         const issue = result.error.issues[0];
         throw new Error(
-            `Gemini returned an invalid detection response (${issue?.path.join('.') || 'unknown field'}). Please try another image.`,
+            `The AI returned an invalid detection response (${issue?.path.join('.') || 'unknown field'}). Please try again or use another image.`,
         );
     }
     return result.data.items;

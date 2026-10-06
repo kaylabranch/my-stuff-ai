@@ -7,6 +7,38 @@ const systemPrompt = `You are a home inventory vision assistant. Identify every 
 {"items":[{"name":"Item name","category":"Furniture","description":"One sentence.","suggestedTags":["tag"],"confidence":0.95,"estimatedValue":125,"bbox":{"x":0.1,"y":0.1,"w":0.3,"h":0.4}}]}
 Use only these categories: Furniture, Electronics, Appliances, Decor, Lighting, Clothing, Books & Media, Kitchenware, Tools, Sports, Art, Plants, Toys, Storage, Other. Bounding boxes are normalized 0 to 1 and must be present for every item. Return at most 20 items.`;
 
+const detectionResponseSchema = {
+    type: 'OBJECT',
+    properties: {
+        items: {
+            type: 'ARRAY',
+            items: {
+                type: 'OBJECT',
+                properties: {
+                    name: { type: 'STRING' },
+                    category: { type: 'STRING' },
+                    description: { type: 'STRING' },
+                    suggestedTags: { type: 'ARRAY', items: { type: 'STRING' } },
+                    confidence: { type: 'NUMBER' },
+                    estimatedValue: { type: 'NUMBER' },
+                    bbox: {
+                        type: 'OBJECT',
+                        properties: {
+                            x: { type: 'NUMBER' },
+                            y: { type: 'NUMBER' },
+                            w: { type: 'NUMBER' },
+                            h: { type: 'NUMBER' },
+                        },
+                        required: ['x', 'y', 'w', 'h'],
+                    },
+                },
+                required: ['name', 'category', 'description', 'suggestedTags', 'confidence', 'estimatedValue', 'bbox'],
+            },
+        },
+    },
+    required: ['items'],
+};
+
 const jsonResponse = (body: unknown, status: number) =>
     new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } });
 
@@ -45,7 +77,11 @@ export default async (request: Request): Promise<Response> => {
                         ],
                     },
                 ],
-                generationConfig: { responseMimeType: 'application/json', temperature: 0.1 },
+                generationConfig: {
+                    responseMimeType: 'application/json',
+                    responseSchema: detectionResponseSchema,
+                    temperature: 0.1,
+                },
             }),
         },
     ).catch(() => null);

@@ -1,0 +1,34 @@
+import { describe, expect, it } from 'vitest';
+import { describeAiHttpError, describeEmptyResponse } from '../../src/lib/ai/geminiProvider';
+
+describe('describeAiHttpError', () => {
+    it('reports rejected API keys for 401, 403, and key messages', () => {
+        expect(describeAiHttpError(403)).toMatch(/API key/);
+        expect(describeAiHttpError(400, 'API key not valid. Please pass a valid API key.')).toMatch(/API key/);
+    });
+
+    it('explains rate limits, oversized images, and unavailable service', () => {
+        expect(describeAiHttpError(429)).toMatch(/rate-limited/);
+        expect(describeAiHttpError(413)).toMatch(/too large/);
+        expect(describeAiHttpError(503)).toMatch(/busy or unreachable/);
+        expect(describeAiHttpError(404)).toMatch(/netlify dev/);
+    });
+
+    it('uses the server message for configuration errors and a generic fallback otherwise', () => {
+        expect(describeAiHttpError(500, 'GEMINI_API_KEY is not configured on the server.')).toMatch(/not configured/);
+        expect(describeAiHttpError(418)).toMatch(/error 418/);
+    });
+});
+
+describe('describeEmptyResponse', () => {
+    it('returns null when text is present', () => {
+        expect(describeEmptyResponse({ candidates: [{ content: { parts: [{ text: '{}' }] } }] })).toBeNull();
+    });
+
+    it('flags unreadable, blocked, truncated, and empty responses', () => {
+        expect(describeEmptyResponse(null)).toMatch(/unreadable/);
+        expect(describeEmptyResponse({ promptFeedback: { blockReason: 'SAFETY' } })).toMatch(/declined/);
+        expect(describeEmptyResponse({ candidates: [{ finishReason: 'MAX_TOKENS' }] })).toMatch(/cut off/);
+        expect(describeEmptyResponse({ candidates: [] })).toMatch(/no results/);
+    });
+});
