@@ -392,6 +392,8 @@ button {
 }
 
 .inventory-image {
+    position: absolute;
+    inset: 0;
     display: block;
     width: 100%;
     height: 100%;
@@ -399,7 +401,14 @@ button {
 }
 
 .inventory-grid .image-placeholder {
-    min-height: 170px;
+    aspect-ratio: 4 / 3;
+    min-height: 0;
+}
+
+.inventory-list .image-placeholder {
+    aspect-ratio: 1;
+    min-height: 0;
+    align-self: start;
 }
 
 .item-card > div:last-child {
@@ -432,7 +441,7 @@ button {
         serif;
 }
 
-.item-card p:last-child {
+.item-card h2 + p {
     margin: 0;
     color: var(--color-muted);
     font-size: 13px;
@@ -682,10 +691,6 @@ button {
         grid-template-columns: 72px 1fr;
     }
 
-    .inventory-list .image-placeholder {
-        min-height: 72px;
-    }
-
     .review-overlay {
         padding: 12px;
     }
@@ -721,13 +726,21 @@ button {
     }
 }
 
-.review-source img:not(.source-image),
-.review-thumb img {
+.review-source img:not(.source-image) {
     display: block;
     width: auto;
     max-width: 100%;
     height: auto;
     max-height: 100%;
+    object-fit: cover;
+}
+
+.review-thumb img {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100%;
+    height: 100%;
     object-fit: cover;
 }
 
